@@ -12,6 +12,12 @@ class MACDSignalPlugin(SignalPlugin):
         """
         return "MACD"
 
+    def get_priority(self) -> int:
+        """
+        Returns the priority of this plugin.
+        """
+        return 2
+
     def required_indicators(self) -> set:
         """
         Returns the MACD indicator name.
@@ -29,4 +35,3 @@ class MACDSignalPlugin(SignalPlugin):
         Generate exit signal based on MACD divergence.
         """
         return dataframe["macd"] < dataframe["macd_signal"]
-

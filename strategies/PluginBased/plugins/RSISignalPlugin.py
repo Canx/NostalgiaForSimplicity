@@ -12,6 +12,12 @@ class RSISignalPlugin(SignalPlugin):
         """
         return "RSI"
 
+    def get_priority(self) -> int:
+        """
+        Returns the priority of this plugin.
+        """
+        return 1
+
     def required_indicators(self) -> set:
         """
         Returns the RSI indicator name.
@@ -29,6 +35,7 @@ class RSISignalPlugin(SignalPlugin):
         Generate exit signal based on RSI > 70.
         """
         return dataframe["rsi"] > 70
+
 
 
 

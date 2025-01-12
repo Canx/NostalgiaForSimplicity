@@ -5,7 +5,7 @@ import pandas_ta as ta
 
 class SignalPlugin(ABC):
     """
-    Abstract base class for all signal plugins, with automatic indicator calculation.
+    Abstract base class for all signal plugins, with built-in priority and indicator management.
     """
 
     # Predefined mapping of indicator names to their calculation functions
@@ -22,11 +22,18 @@ class SignalPlugin(ABC):
         pass
 
     @abstractmethod
+    def get_priority(self) -> int:
+        """
+        Returns the priority of the plugin.
+        Lower numbers indicate higher priority.
+        """
+        pass
+
+    @abstractmethod
     def required_indicators(self) -> set:
         """
         Returns a set of required indicator names for the plugin.
-        Example:
-        {"rsi", "macd"}
+        Example: {"rsi", "macd"}
         """
         pass
 
@@ -76,13 +83,10 @@ class SignalPlugin(ABC):
 
     def generate_exit_signals(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Generate exit signals and add the plugin's tag to the 'exit_tag' column.
+        Generate exit signals and filter them based on the enter_tag.
         """
         signal = self.exit_signal(dataframe, metadata)
-        dataframe["exit_long"] |= signal
-        dataframe.loc[signal, "exit_tag"] = (
-            dataframe.loc[signal, "exit_tag"].astype(str) + f",{self.get_plugin_tag()}"
-        ).str.strip(",")
+        dataframe["exit_long"] = dataframe["enter_tag"] == self.get_plugin_tag()
+        dataframe["exit_long"] &= signal
         return dataframe
-
 

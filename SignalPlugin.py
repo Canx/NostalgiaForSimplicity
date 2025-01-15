@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from pandas import DataFrame
+import logging
 
 
 class SignalPlugin(ABC):
@@ -13,6 +14,7 @@ class SignalPlugin(ABC):
         :param priority: Lower values indicate higher priority. Default is 0.
         """
         self.priority = priority
+        self.log = logging.getLogger(__name__)
 
     def get_priority(self) -> int:
         """

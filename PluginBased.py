@@ -1,5 +1,6 @@
 import os
 import importlib.util
+import logging
 from SignalPlugin import SignalPlugin
 from pandas import DataFrame
 from freqtrade.strategy.interface import IStrategy
@@ -14,8 +15,10 @@ class PluginBased(IStrategy):
     minimal_roi = {"0": 0.1}
     stoploss = -0.1
     timeframe = "5m"
+    startup_candle_count = 100 # TODO: definida por los plugins
 
     def __init__(self, config: dict) -> None:
+        self.log = logging.getLogger(__name__)
         super().__init__(config)
         self.plugins = self.load_plugins()
 
@@ -66,26 +69,28 @@ class PluginBased(IStrategy):
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Generate entry signals based on plugin priority.
+        Generate entry signals based on plugin logic.
         """
-        # Ensure the required columns exist
+        # Asegurar columnas necesarias
         if "enter_long" not in dataframe.columns:
             dataframe["enter_long"] = 0
         if "enter_tag" not in dataframe.columns:
             dataframe["enter_tag"] = ""
 
-        # Iterate through plugins and apply entry signals
         for plugin in self.plugins:
-            dataframe = plugin.populate_indicators(dataframe, metadata)
             entry_signal = plugin.entry_signal(dataframe, metadata)
 
-            # Apply the entry signal if found
-            if entry_signal.any():
-                dataframe.loc[entry_signal, "enter_long"] = 1
-                dataframe.loc[entry_signal, "enter_tag"] = plugin.get_plugin_tag()
-                break  # Stop after the first plugin generates a signal
+            # Verificar que entry_signal sea una Series booleana
+            if not isinstance(entry_signal, DataFrame) and isinstance(entry_signal, DataFrame):
+                raise TypeError(f"Plugin {plugin.get_plugin_tag()} returned an invalid entry signal type.")
+
+            # Aplicar señales de entrada al DataFrame
+            dataframe.loc[entry_signal, "enter_long"] = 1
+            dataframe.loc[entry_signal, "enter_tag"] = plugin.get_plugin_tag()
 
         return dataframe
+
+
 
 
 
@@ -93,6 +98,21 @@ class PluginBased(IStrategy):
         """
         Filter exit signals based on the enter_tag.
         """
+        # Asegurar columnas necesarias
+        if "exit_long" not in dataframe.columns:
+            dataframe["exit_long"] = 0
+        if "exit_tag" not in dataframe.columns:
+            dataframe["exit_tag"] = ""
+
         for plugin in self.plugins:
-            dataframe = plugin.exit_signal(dataframe, metadata)
+            exit_signal = plugin.exit_signal(dataframe, metadata)
+
+            # Verificar que exit_signal sea una Series
+            if not isinstance(exit_signal, DataFrame) and isinstance(exit_signal, DataFrame):
+                raise TypeError(f"Plugin {plugin.get_plugin_tag()} returned an invalid exit signal type.")
+
+            dataframe.loc[exit_signal, "exit_long"] = 1
+            dataframe.loc[exit_signal, "exit_tag"] = plugin.get_plugin_tag()
+
         return dataframe
+

@@ -3,6 +3,7 @@ import importlib.util
 import logging
 from SignalPlugin import SignalPlugin
 from pandas import DataFrame
+import pandas as pd
 from freqtrade.strategy.interface import IStrategy
 
 
@@ -55,9 +56,22 @@ class PluginBased(IStrategy):
         """
         Callback to populate indicators for the strategy.
         """
+        self.log.info(f"First rows of the dataframe: {dataframe.head(10)}")
+
         if dataframe.empty:
             self.log.warning("Received an empty DataFrame in populate_indicators. Skipping.")
             return dataframe
+
+        # Contar cuántas filas hay en el DataFrame
+        row_count = len(dataframe)
+        self.log.info(f"The dataframe contains {row_count} rows.")
+
+        # Verificar cuántos NaN hay en la columna "close"
+        nan_count = dataframe["close"].isna().sum()
+        if nan_count > 0:
+            self.log.warning(f"Detected {nan_count} NaN values in 'close' column before plugin execution.")
+        else:
+            self.log.info("No NaN values detected in 'close' column before plugin execution.")
 
         # Lógica para indicadores, si el DataFrame no está vacío
         for plugin in self.plugins:
@@ -67,9 +81,10 @@ class PluginBased(IStrategy):
 
 
 
+
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Generate entry signals based on plugin logic.
+        Generate entry signals based on plugin logic, with custom tags for each signal.
         """
         # Asegurar columnas necesarias
         if "enter_long" not in dataframe.columns:
@@ -77,26 +92,33 @@ class PluginBased(IStrategy):
         if "enter_tag" not in dataframe.columns:
             dataframe["enter_tag"] = ""
 
+        pair = metadata.get("pair", "Unknown")  # Obtener el par desde metadata
+
         for plugin in self.plugins:
             entry_signal = plugin.entry_signal(dataframe, metadata)
 
             # Verificar que entry_signal sea una Series booleana
-            if not isinstance(entry_signal, DataFrame) and isinstance(entry_signal, DataFrame):
+            if not isinstance(entry_signal, pd.Series) or entry_signal.dtype != bool:
                 raise TypeError(f"Plugin {plugin.get_plugin_tag()} returned an invalid entry signal type.")
 
             # Aplicar señales de entrada al DataFrame
             dataframe.loc[entry_signal, "enter_long"] = 1
+
+            # Asignar etiquetas (enter_tag) para las señales activas
             dataframe.loc[entry_signal, "enter_tag"] = plugin.get_plugin_tag()
+
+            # Registrar el par y las señales generadas
+            signal_count = entry_signal.sum()
+            if signal_count > 0:
+                self.log.info(f"Plugin {plugin.get_plugin_tag()} generated {signal_count} entry signal(s) for pair {pair}.")
 
         return dataframe
 
 
 
-
-
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         """
-        Filter exit signals based on the enter_tag.
+        Generate exit signals based on plugin logic, with custom tags for each signal.
         """
         # Asegurar columnas necesarias
         if "exit_long" not in dataframe.columns:
@@ -104,15 +126,26 @@ class PluginBased(IStrategy):
         if "exit_tag" not in dataframe.columns:
             dataframe["exit_tag"] = ""
 
+        pair = metadata.get("pair", "Unknown")  # Obtener el par desde metadata
+
         for plugin in self.plugins:
             exit_signal = plugin.exit_signal(dataframe, metadata)
 
-            # Verificar que exit_signal sea una Series
-            if not isinstance(exit_signal, DataFrame) and isinstance(exit_signal, DataFrame):
+            # Verificar que exit_signal sea una Series booleana
+            if not isinstance(exit_signal, pd.Series) or exit_signal.dtype != bool:
                 raise TypeError(f"Plugin {plugin.get_plugin_tag()} returned an invalid exit signal type.")
 
+            # Aplicar señales de salida al DataFrame
             dataframe.loc[exit_signal, "exit_long"] = 1
+
+            # Asignar etiquetas (exit_tag) para las señales activas
             dataframe.loc[exit_signal, "exit_tag"] = plugin.get_plugin_tag()
 
+            # Registrar el par y las señales generadas
+            signal_count = exit_signal.sum()
+            if signal_count > 0:
+                self.log.info(f"Plugin {plugin.get_plugin_tag()} generated {signal_count} exit signal(s) for pair {pair}.")
+
         return dataframe
+
 

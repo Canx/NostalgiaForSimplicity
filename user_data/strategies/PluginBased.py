@@ -62,7 +62,7 @@ class PluginBased(IStrategy):
 
         # Contar cuántas filas hay en el DataFrame
         row_count = len(dataframe)
-        self.log.info(f"The dataframe contains {row_count} rows.")
+        self.log.debug(f"The dataframe contains {row_count} rows.")
 
         # Verificar cuántos NaN hay en la columna "close"
         nan_count = dataframe["close"].isna().sum()
@@ -100,7 +100,7 @@ class PluginBased(IStrategy):
                 #self.log.info(f"Plugin {plugin.get_plugin_tag()} is disabled, skipping entry signal.")
                 continue
             
-            self.log.info(f"Checking entry signals from plugin {plugin.get_plugin_tag()}.")
+            self.log.debug(f"Checking entry signals from plugin {plugin.get_plugin_tag()}.")
             entry_signal = plugin.entry_signal(dataframe, metadata)
 
             # Verificar que entry_signal sea una Series booleana
@@ -139,7 +139,7 @@ class PluginBased(IStrategy):
                 #self.log.info(f"Plugin {plugin.get_plugin_tag()} is disabled, skipping exit signal.")
                 continue
 
-            self.log.info(f"Checking exit signals from plugin {plugin.get_plugin_tag()}.")
+            self.log.debug(f"Checking exit signals from plugin {plugin.get_plugin_tag()}.")
             exit_signal = plugin.exit_signal(dataframe, metadata)
 
             # Verificar que exit_signal sea una Series booleana

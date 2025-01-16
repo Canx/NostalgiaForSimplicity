@@ -56,8 +56,6 @@ class PluginBased(IStrategy):
         """
         Callback to populate indicators for the strategy.
         """
-        self.log.info(f"First rows of the dataframe: {dataframe.head(10)}")
-
         if dataframe.empty:
             self.log.warning("Received an empty DataFrame in populate_indicators. Skipping.")
             return dataframe
@@ -70,11 +68,14 @@ class PluginBased(IStrategy):
         nan_count = dataframe["close"].isna().sum()
         if nan_count > 0:
             self.log.warning(f"Detected {nan_count} NaN values in 'close' column before plugin execution.")
-        else:
-            self.log.info("No NaN values detected in 'close' column before plugin execution.")
 
         # Lógica para indicadores, si el DataFrame no está vacío
         for plugin in self.plugins:
+            if not plugin.enabled:
+                #self.log.info(f"Plugin {plugin.get_plugin_tag()} is disabled, skipping populating indicators.")
+                continue
+
+            self.log.info(f"Populating indicators from plugin {plugin.get_plugin_tag()}")
             dataframe = plugin.populate_indicators(dataframe, metadata)
 
         return dataframe
@@ -95,6 +96,11 @@ class PluginBased(IStrategy):
         pair = metadata.get("pair", "Unknown")  # Obtener el par desde metadata
 
         for plugin in self.plugins:
+            if not plugin.enabled:
+                #self.log.info(f"Plugin {plugin.get_plugin_tag()} is disabled, skipping entry signal.")
+                continue
+            
+            self.log.info(f"Checking entry signals from plugin {plugin.get_plugin_tag()}.")
             entry_signal = plugin.entry_signal(dataframe, metadata)
 
             # Verificar que entry_signal sea una Series booleana
@@ -129,6 +135,11 @@ class PluginBased(IStrategy):
         pair = metadata.get("pair", "Unknown")  # Obtener el par desde metadata
 
         for plugin in self.plugins:
+            if not plugin.enabled:
+                #self.log.info(f"Plugin {plugin.get_plugin_tag()} is disabled, skipping exit signal.")
+                continue
+
+            self.log.info(f"Checking exit signals from plugin {plugin.get_plugin_tag()}.")
             exit_signal = plugin.exit_signal(dataframe, metadata)
 
             # Verificar que exit_signal sea una Series booleana

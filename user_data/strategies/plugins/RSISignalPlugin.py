@@ -11,7 +11,7 @@ class RSISignalPlugin(SignalPlugin):
     """
 
     def __init__(self, priority: int = 2):
-        super().__init__(priority)
+        super().__init__(priority, enabled=False)
 
     def get_plugin_tag(self) -> str:
         return "RSI"

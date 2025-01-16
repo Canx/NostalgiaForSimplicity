@@ -10,7 +10,7 @@ class MACDSignalPlugin(SignalPlugin):
     """
 
     def __init__(self, priority: int = 1):
-        super().__init__(priority)
+        super().__init__(priority, enabled=False)
 
     def get_plugin_tag(self) -> str:
         return "MACD"

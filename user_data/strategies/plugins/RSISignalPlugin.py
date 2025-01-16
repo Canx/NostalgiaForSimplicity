@@ -31,7 +31,12 @@ class RSISignalPlugin(SignalPlugin):
             return dataframe
 
         dataframe["rsi"] = pta.rsi(dataframe["close"], length=14)
-        self.log.info(f"RSI calculated and added to DataFrame: {dataframe['rsi'].head()}")
+
+        # Verificar si los valores calculados en RSI son válidos (no NaN)
+        if dataframe["rsi"].isna().any():
+            self.log.warning("NaN values detected in 'rsi' after calculation.")
+        else:
+            self.log.info(f"RSI calculated and added to DataFrame: {dataframe['rsi'].head()}")
 
         return dataframe
 

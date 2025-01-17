@@ -15,7 +15,7 @@ class NostalgiaForSimplicity(IStrategy):
     """
 
     INTERFACE_VERSION = 3
-    minimal_roi = {"0": 0.1}
+    minimal_roi = {"40": 0.0, "30": 0.01, "20": 0.02, "0": 0.04}
     stoploss = -0.1
     timeframe = "5m"
     startup_candle_count = 100 # TODO: definida por los plugins

@@ -75,6 +75,14 @@ class NostalgiaForSimplicity(IStrategy):
 
         df = self.calculate_aroon(df, length=14)
 
+        df["MFI_14"] = ta.mfi(df["high"], df["low"], df["close"], df["volume"], length=14)
+
+        df["EMA_12"] = ta.ema(df["close"], length=12)
+        df["EMA_20"] = ta.ema(df["close"], length=20)
+        df["EMA_26"] = ta.ema(df["close"], length=26)
+
+        df = self.calculate_bbands(df)
+
         return df
     
 
@@ -88,6 +96,17 @@ class NostalgiaForSimplicity(IStrategy):
 
         return df
 
+
+    def calculate_bbands(self, df: DataFrame) -> DataFrame:
+        bbands_20_2 = ta.bbands(df["close"], length=20, std=2)
+        df["BBL_20_2.0"] = bbands_20_2["BBL_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
+        df["BBM_20_2.0"] = bbands_20_2["BBM_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
+        df["BBU_20_2.0"] = bbands_20_2["BBU_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
+        df["BBB_20_2.0"] = bbands_20_2["BBB_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
+        df["BBP_20_2.0"] = bbands_20_2["BBP_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
+
+        return df  
+      
 
     def calculate_aroon(self, df: DataFrame, length: int) -> DataFrame:
         """

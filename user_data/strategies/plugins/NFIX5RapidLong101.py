@@ -1,8 +1,6 @@
-import pandas_ta as ta
 from SignalPlugin import SignalPlugin
 from pandas import DataFrame
 import pandas as pd
-import numpy as np
 
 # Rapid mode long 101 entry signal
 class NFIX5RapidLong101(SignalPlugin):
@@ -10,7 +8,7 @@ class NFIX5RapidLong101(SignalPlugin):
         super().__init__(priority, enabled=True)
 
     def get_plugin_tag(self) -> str:
-        return "101"
+        return "rl_101"
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
         """

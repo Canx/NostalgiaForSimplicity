@@ -9,7 +9,7 @@ import numpy as np
 from freqtrade.strategy import IStrategy, informative
 
 
-class PluginBased(IStrategy):
+class NostalgiaForSimplicity(IStrategy):
     """
     Strategy managing multiple plugins with priority-based entry and exit signals.
     """

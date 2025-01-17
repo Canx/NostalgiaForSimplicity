@@ -4,7 +4,9 @@ import logging
 from SignalPlugin import SignalPlugin
 from pandas import DataFrame
 import pandas as pd
-from freqtrade.strategy.interface import IStrategy
+import pandas_ta as ta
+import numpy as np
+from freqtrade.strategy import IStrategy, informative
 
 
 class PluginBased(IStrategy):
@@ -51,36 +53,55 @@ class PluginBased(IStrategy):
         return sorted(plugins, key=lambda plugin: plugin.get_priority())
 
 
-
-    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+    def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
         """
-        Callback to populate indicators for the strategy.
+        Add necessary indicators to the DataFrame.
         """
-        if dataframe.empty:
-            self.log.warning("Received an empty DataFrame in populate_indicators. Skipping.")
-            return dataframe
 
-        # Contar cuántas filas hay en el DataFrame
-        row_count = len(dataframe)
-        self.log.debug(f"The dataframe contains {row_count} rows.")
+        # Indicadores de 5 minutos
+        df["RSI_20"] = ta.rsi(df["close"], length=20)
+        df["RSI_3"] = ta.rsi(df["close"], length=3)
 
-        # Verificar cuántos NaN hay en la columna "close"
-        nan_count = dataframe["close"].isna().sum()
-        if nan_count > 0:
-            self.log.warning(f"Detected {nan_count} NaN values in 'close' column before plugin execution.")
+        stochrsi = ta.stochrsi(df["close"])
+        if isinstance(stochrsi, pd.DataFrame):
+            df["STOCHRSIk_14_14_3_3"] = stochrsi["STOCHRSIk_14_14_3_3"]
+            df["STOCHRSId_14_14_3_3"] = stochrsi["STOCHRSId_14_14_3_3"]
+        else:
+            df["STOCHRSIk_14_14_3_3"] = np.nan
+            df["STOCHRSId_14_14_3_3"] = np.nan
 
-        # Lógica para indicadores, si el DataFrame no está vacío
-        for plugin in self.plugins:
-            if not plugin.enabled:
-                #self.log.info(f"Plugin {plugin.get_plugin_tag()} is disabled, skipping populating indicators.")
-                continue
+        df["SMA_16"] = ta.sma(df["close"], length=16)
+        df["RSI_14"] = ta.rsi(df["close"], length=14)
 
-            self.log.info(f"Populating indicators from plugin {plugin.get_plugin_tag()}")
-            dataframe = plugin.populate_indicators(dataframe, metadata)
+        df = self.calculate_aroon(df, length=14)
 
-        return dataframe
+        return df
+    
+
+    @informative('15m')
+    def populate_indicators_15m(self, df: DataFrame, metadata: dict) -> DataFrame:
+        """
+        Calcula los indicadores para el timeframe de 15m.
+        """
+        # Llamada a la función genérica para calcular Aroon
+        df = self.calculate_aroon(df, length=14)
+
+        return df
 
 
+    def calculate_aroon(self, df: DataFrame, length: int) -> DataFrame:
+        """
+        Función genérica para calcular el indicador Aroon.
+        """
+        aroon = ta.aroon(df["high"], df["low"], length=length)
+        if isinstance(aroon, pd.DataFrame):
+            df[f"AROONU_{length}"] = aroon[f"AROONU_{length}"]
+            df[f"AROOND_{length}"] = aroon[f"AROOND_{length}"]
+        else:
+            df[f"AROONU_{length}"] = np.nan
+            df[f"AROOND_{length}"] = np.nan
+
+        return df
 
 
     def populate_entry_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -119,7 +140,6 @@ class PluginBased(IStrategy):
                 self.log.info(f"Plugin {plugin.get_plugin_tag()} generated {signal_count} entry signal(s) for pair {pair}.")
 
         return dataframe
-
 
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:

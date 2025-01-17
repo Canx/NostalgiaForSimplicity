@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from pandas import DataFrame
 import pandas as pd
 import logging
@@ -44,13 +43,6 @@ class SignalPlugin:
         Returns the unique tag for the plugin.
         """
         return self.__class__.__name__
-
-    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-        """
-        Add required indicators to the DataFrame. Default does nothing.
-        """
-        self.log.debug(f"Plugin {self.get_plugin_tag()} does not implement populate_indicators.")
-        return dataframe
 
     def entry_signal(self, dataframe: DataFrame, metadata: dict) -> pd.Series:
         """

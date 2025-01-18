@@ -6,7 +6,7 @@ from pandas import DataFrame
 import pandas as pd
 import pandas_ta as ta
 from freqtrade.strategy import IStrategy, informative
-from Indicators import add_indicators, calculate_stochrsi, calculate_aroon, calculate_bbands
+import Indicators as ind
 
 
 class NostalgiaForSimplicity(IStrategy):
@@ -54,24 +54,23 @@ class NostalgiaForSimplicity(IStrategy):
 
 
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
-        df = add_indicators(df)
+        df = ind.add_indicators(df)
 
         return df
     
 
     @informative('15m')
     def populate_indicators_15m(self, df: DataFrame, metadata: dict) -> DataFrame:
-        df = calculate_aroon(df, length=14)
+        df = ind.calculate_aroon(df, length=14)
 
         return df
 
 
     @informative('1h')
     def populate_indicators_1h(self, df: DataFrame, metadata: dict) -> DataFrame:
-        df["WILLR_84"] = ta.willr(df["high"], df["low"], df["close"], length=84)
-        
-        df = calculate_stochrsi(df)
-        df = calculate_bbands(df)
+        df = ind.calculate_willr(df, length=84)
+        df = ind.calculate_stochrsi(df)
+        df = ind.calculate_bbands(df)
 
         return df
 

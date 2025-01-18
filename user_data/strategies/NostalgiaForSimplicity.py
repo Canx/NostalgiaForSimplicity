@@ -5,9 +5,8 @@ from SignalPlugin import SignalPlugin
 from pandas import DataFrame
 import pandas as pd
 import pandas_ta as ta
-import numpy as np
 from freqtrade.strategy import IStrategy, informative
-from Indicators import add_indicators, calculate_aroon, calculate_stochrsi, calculate_bbands
+from Indicators import add_indicators, calculate_stochrsi, calculate_aroon, calculate_bbands
 
 
 class NostalgiaForSimplicity(IStrategy):
@@ -55,9 +54,6 @@ class NostalgiaForSimplicity(IStrategy):
 
 
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
-        """
-        Add necessary indicators to the DataFrame.
-        """ 
         df = add_indicators(df)
 
         return df
@@ -65,10 +61,6 @@ class NostalgiaForSimplicity(IStrategy):
 
     @informative('15m')
     def populate_indicators_15m(self, df: DataFrame, metadata: dict) -> DataFrame:
-        """
-        Calcula los indicadores para el timeframe de 15m.
-        """
-        # Llamada a la función genérica para calcular Aroon
         df = calculate_aroon(df, length=14)
 
         return df

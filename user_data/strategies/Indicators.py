@@ -3,9 +3,6 @@ import pandas as pd
 import numpy as np
 
 def calculate_aroon(df: pd.DataFrame, length: int) -> pd.DataFrame:
-    """
-    Calcula el indicador Aroon.
-    """
     aroon = ta.aroon(df["high"], df["low"], length=length)
     if isinstance(aroon, pd.DataFrame):
         df[f"AROONU_{length}"] = aroon[f"AROONU_{length}"]
@@ -17,9 +14,6 @@ def calculate_aroon(df: pd.DataFrame, length: int) -> pd.DataFrame:
     return df
 
 def calculate_stochrsi(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calcula el indicador Stochastic RSI.
-    """
     stochrsi = ta.stochrsi(df["close"])
     if isinstance(stochrsi, pd.DataFrame):
         df["STOCHRSIk_14_14_3_3"] = stochrsi["STOCHRSIk_14_14_3_3"]
@@ -31,9 +25,6 @@ def calculate_stochrsi(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def calculate_bbands(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calcula las Bandas de Bollinger (BBands).
-    """
     bbands_20_2 = ta.bbands(df["close"], length=20, std=2)
     df["BBL_20_2.0"] = bbands_20_2["BBL_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
     df["BBM_20_2.0"] = bbands_20_2["BBM_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
@@ -44,9 +35,6 @@ def calculate_bbands(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Agrega todos los indicadores necesarios al DataFrame.
-    """
     df["RSI_3"] = ta.rsi(df["close"], length=3)
     df["RSI_4"] = ta.rsi(df["close"], length=4)
     df["RSI_20"] = ta.rsi(df["close"], length=20)

@@ -82,34 +82,36 @@ class NostalgiaForSimplicity(IStrategy):
         if "enter_long" not in dataframe.columns:
             dataframe["enter_long"] = 0
         if "enter_tag" not in dataframe.columns:
-            dataframe["enter_tag"] = ""
+            dataframe["enter_tag"] = None  # Inicializar con None
 
         pair = metadata.get("pair", "Unknown")  # Obtener el par desde metadata
 
         for signal in self.signals:
             if not signal.enabled:
-                #self.log.info(f"Plugin {plugin.get_plugin_tag()} is disabled, skipping entry signal.")
                 continue
-            
+
             self.log.debug(f"Checking entry signals from plugin {signal.get_signal_tag()}.")
             entry_signal = signal.entry_signal(dataframe, metadata)
 
             # Verificar que entry_signal sea una Series booleana
             if not isinstance(entry_signal, pd.Series) or entry_signal.dtype != bool:
-                raise TypeError(f"Plugin {signal.get_signal_tag()} returned an invalid entry signal type.")
+                raise TypeError(f"Signal {signal.get_signal_tag()} returned an invalid entry signal type.")
 
-            # Aplicar señales de entrada al DataFrame
-            dataframe.loc[entry_signal, "enter_long"] = 1
-
-            # Asignar etiquetas (enter_tag) para las señales activas
-            dataframe.loc[entry_signal, "enter_tag"] = signal.get_signal_tag()
+            # Aplicar señales solo si no se han asignado previamente
+            new_signals = (entry_signal & (dataframe["enter_long"] == 0))
+            dataframe.loc[new_signals, ["enter_long", "enter_tag"]] = (1, signal.get_signal_tag())
 
             # Registrar el par y las señales generadas
-            signal_count = entry_signal.sum()
+            signal_count = new_signals.sum()
             if signal_count > 0:
                 self.log.info(f"Signal {signal.get_signal_tag()} generated {signal_count} entry signal(s) for pair {pair}.")
 
+        # Confirmar que no hay sobrescrituras accidentales
+        self.log.debug(f"Final dataframe state:\n{dataframe[['enter_long', 'enter_tag']].tail()}")
+
         return dataframe
+
+
 
 
     def populate_exit_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:

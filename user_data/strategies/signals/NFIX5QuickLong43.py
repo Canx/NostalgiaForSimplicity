@@ -1,9 +1,9 @@
-from SignalPlugin import SignalPlugin
+from signals.Signal import Signal
 from pandas import DataFrame
 import pandas as pd
 
 # Rapid mode long 43 entry signal
-class NFIX5QuickLong43(SignalPlugin):
+class NFIX5QuickLong43(Signal):
     def __init__(self, priority: int = 1):
         super().__init__(priority, enabled=True)
 

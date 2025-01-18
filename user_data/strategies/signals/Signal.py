@@ -3,14 +3,14 @@ import pandas as pd
 import logging
 
 
-class SignalPlugin:
+class Signal:
     """
-    Base class for all signal plugins. Allows plugins to implement only the required methods.
+    Base class for all signals.
     """
 
     def __init__(self, priority: int = 0, enabled: bool = True):
         """
-        Initialize the plugin with a priority value and enabled state.
+        Initialize the signal with a priority value and enabled state.
         :param priority: Lower values indicate higher priority. Default is 0.
         :param enabled: Whether the plugin is enabled or not. Default is True.
         """
@@ -20,27 +20,27 @@ class SignalPlugin:
 
     def get_priority(self) -> int:
         """
-        Returns the priority of the plugin.
+        Returns the priority of the signal.
         """
         return self.priority
 
     def is_enabled(self) -> bool:
         """
-        Returns whether the plugin is enabled.
+        Returns whether the signal is enabled.
         """
         return self.enabled
 
     def set_enabled(self, enabled: bool):
         """
-        Enable or disable the plugin.
+        Enable or disable the signal.
         """
         self.enabled = enabled
         state = "enabled" if enabled else "disabled"
-        self.log.info(f"Plugin {self.get_plugin_tag()} has been {state}.")
+        self.log.info(f"Signal {self.get_signal_tag()} has been {state}.")
 
-    def get_plugin_tag(self) -> str:
+    def get_signal_tag(self) -> str:
         """
-        Returns the unique tag for the plugin.
+        Returns the unique tag for the signal.
         """
         return self.__class__.__name__
 
@@ -48,13 +48,13 @@ class SignalPlugin:
         """
         Generate entry signals based on plugin-specific logic. Default returns False for all rows.
         """
-        self.log.debug(f"Plugin {self.get_plugin_tag()} does not implement entry_signal.")
+        self.log.debug(f"Plugin {self.get_signal_tag()} does not implement entry_signal.")
         return pd.Series(False, index=dataframe.index)
 
     def exit_signal(self, dataframe: DataFrame, metadata: dict) -> pd.Series:
         """
         Generate exit signals based on plugin-specific logic. Default returns False for all rows.
         """
-        self.log.debug(f"Plugin {self.get_plugin_tag()} does not implement exit_signal.")
+        self.log.debug(f"Plugin {self.get_signal_tag()} does not implement exit_signal.")
         return pd.Series(False, index=dataframe.index)
 

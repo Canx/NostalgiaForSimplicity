@@ -1,10 +1,10 @@
-from SignalPlugin import SignalPlugin
+from signals.Signal import Signal
 from pandas import DataFrame
 import pandas as pd
 
 
 # Long 6 entry signal
-class NFIX5Long6(SignalPlugin):
+class NFIX5Long6(Signal):
     def __init__(self, priority: int = 1):
         super().__init__(priority, enabled=True)
 

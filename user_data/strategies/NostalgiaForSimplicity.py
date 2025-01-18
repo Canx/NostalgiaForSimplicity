@@ -27,7 +27,7 @@ class NostalgiaForSimplicity(IStrategy):
 
     def load_signals(self):
         """
-        Dynamically load and sort plugins by priority.
+        Dynamically load and sort signals by priority.
         """
         signals = []
         signal_dir = os.path.join(os.path.dirname(__file__), "signals")
@@ -51,6 +51,23 @@ class NostalgiaForSimplicity(IStrategy):
         # Sort signals by priority
         return sorted(signals, key=lambda signal: signal.get_priority())
 
+
+    @property
+    def plot_config(self):
+        plot_config = {}
+        plot_config['subplots'] = {
+            # Create subplot MACD
+            "downtrend": {
+                'is_downtrend': {'color': 'red'}
+            },
+            # Additional subplot RSI
+            "EMA": {
+                'EMA_12': {'color': 'red'},
+                'EMA_26': {'color': 'blue'}
+            }
+        }
+
+        return plot_config
 
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
         df = ind.add_indicators(df)
@@ -87,8 +104,12 @@ class NostalgiaForSimplicity(IStrategy):
 
         pair = metadata.get("pair", "Unknown")  # Obtener el par desde metadata
 
-        # Filtrar el DataFrame para evitar señales en downtrend
-        dataframe["process_signals"] = ~dataframe.get("is_downtrend", False)
+        # Verificar si "is_downtrend" existe, si no, inicializarla
+        if "is_downtrend" not in dataframe.columns:
+            dataframe["is_downtrend"] = False  # Por defecto, asumimos que no hay tendencia bajista
+
+        # Filtrar DataFrame para evitar señales en downtrend
+        valid_rows = ~dataframe["is_downtrend"]
 
         for signal in self.signals:
             if not signal.enabled:
@@ -101,9 +122,9 @@ class NostalgiaForSimplicity(IStrategy):
             if not isinstance(entry_signal, pd.Series) or entry_signal.dtype != bool:
                 raise TypeError(f"Signal {signal.get_signal_tag()} returned an invalid entry signal type.")
 
-            # Aplicar señales solo si no se han asignado previamente y no hay downtrend
+            # Aplicar señales solo si no hay downtrend y no se han asignado previamente
             new_signals = (
-                entry_signal & (dataframe["enter_long"] == 0) & dataframe["process_signals"]
+                entry_signal & (dataframe["enter_long"] == 0) & valid_rows
             )
 
             # Asignar 1 a 'enter_long' para las señales activas
@@ -118,11 +139,9 @@ class NostalgiaForSimplicity(IStrategy):
                 self.log.info(f"Signal {signal.get_signal_tag()} generated {signal_count} entry signal(s) for pair {pair}.")
 
         # Confirmar que no hay sobrescrituras accidentales
-        self.log.debug(f"Final dataframe state:\n{dataframe[['enter_long', 'enter_tag', 'process_signals']].tail()}")
+        self.log.debug(f"Final dataframe state:\n{dataframe[['enter_long', 'enter_tag', 'is_downtrend']].tail()}")
 
         return dataframe
-
-
 
 
 

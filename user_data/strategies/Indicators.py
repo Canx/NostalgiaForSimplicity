@@ -99,11 +99,42 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df = calculate_ema(df, length=12)
     df = calculate_ema(df, length=20)
     df = calculate_ema(df, length=26)
+
     df = calculate_willr(df, length=14)
     df = calculate_rolling_max(df, length=48, column="close")
 
     df = calculate_aroon(df, length=14)
     df = calculate_stochrsi(df)
     df = calculate_bbands(df)
+    df = calculate_is_downtrend(df)
+
+    return df
+
+
+def calculate_ema_slope(df: pd.DataFrame, length: int) -> pd.Series:
+    """
+    Calcula la pendiente de una EMA determinada.
+    """
+    ema = ta.ema(df['close'], length=length)
+    return ema.diff()
+
+
+def calculate_is_downtrend(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Calcula una columna `is_downtrend` en el DataFrame basada en:
+    - Pendiente de EMA12 negativa
+    - Pendiente de EMA26 negativa
+    - Pendiente de EMA12 más pronunciada que EMA26
+    """
+    # Calcular las EMAs y sus pendientes
+    df['EMA_12_slope'] = df['EMA_12'].diff()
+    df['EMA_26_slope'] = df['EMA_26'].diff()
+
+    # Calcular la condición de downtrend
+    df['is_downtrend'] = (
+        (df['EMA_12_slope'] < 0) &
+        (df['EMA_26_slope'] < 0) &
+        (df['EMA_12_slope'] < df['EMA_26_slope'])
+    )
 
     return df

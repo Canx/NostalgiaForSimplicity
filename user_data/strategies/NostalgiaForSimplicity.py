@@ -55,16 +55,15 @@ class NostalgiaForSimplicity(IStrategy):
     @property
     def plot_config(self):
         plot_config = {}
+        plot_config['main_plot'] = {
+            'EMA_12': {'color': 'red'},
+            'EMA_26': {'color': 'blue'}
+        }
         plot_config['subplots'] = {
             # Create subplot MACD
             "downtrend": {
                 'is_downtrend': {'color': 'red'}
-            },
-            # Additional subplot RSI
-            "EMA": {
-                'EMA_12': {'color': 'red'},
-                'EMA_26': {'color': 'blue'}
-            }
+            },     
         }
 
         return plot_config

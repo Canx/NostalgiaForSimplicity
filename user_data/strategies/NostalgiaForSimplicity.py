@@ -57,13 +57,21 @@ class NostalgiaForSimplicity(IStrategy):
         plot_config = {}
         plot_config['main_plot'] = {
             'EMA_12': {'color': 'red'},
-            'EMA_26': {'color': 'blue'}
+            'EMA_26': {'color': 'blue'},
+            'EMA_50': {'color': 'green'},
+            'EMA_200': {'color': 'yellow'},
         }
         plot_config['subplots'] = {
             # Create subplot MACD
             "downtrend": {
-                'is_downtrend': {'color': 'red'}
-            },     
+                'is_downtrend': {'color': 'red'},
+            },
+            "downtrend_signals": {
+                'downtrend_signals': { 'color': 'blue'},
+            },
+            "ADX": {
+                'ADX': { 'color': 'green'},
+            }
         }
 
         return plot_config

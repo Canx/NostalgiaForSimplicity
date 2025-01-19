@@ -95,19 +95,19 @@ class NostalgiaForSimplicity(IStrategy):
         Generate entry signals based on plugin logic, with custom tags for each signal,
         while avoiding entries during a downtrend.
         """
-        # Asegurar columnas necesarias
+        # Ensure required columns exist
         if "enter_long" not in dataframe.columns:
             dataframe["enter_long"] = 0
         if "enter_tag" not in dataframe.columns:
-            dataframe["enter_tag"] = None  # Inicializar con None
+            dataframe["enter_tag"] = None  # Initialize with None
 
-        pair = metadata.get("pair", "Unknown")  # Obtener el par desde metadata
+        pair = metadata.get("pair", "Unknown")  # Retrieve the trading pair from metadata
 
-        # Verificar si "is_downtrend" existe, si no, inicializarla
+        # Check if "is_downtrend" exists; initialize if not
         if "is_downtrend" not in dataframe.columns:
-            dataframe["is_downtrend"] = False  # Por defecto, asumimos que no hay tendencia bajista
+            dataframe["is_downtrend"] = False  # Default to no downtrend
 
-        # Filtrar DataFrame para evitar señales en downtrend
+        # Mask to avoid signals during a downtrend
         valid_rows = ~dataframe["is_downtrend"]
 
         for signal in self.signals:
@@ -115,29 +115,37 @@ class NostalgiaForSimplicity(IStrategy):
                 continue
 
             self.log.debug(f"Checking entry signals from plugin {signal.get_signal_tag()}.")
-            entry_signal = signal.entry_signal(dataframe, metadata)
 
-            # Verificar que entry_signal sea una Series booleana
-            if not isinstance(entry_signal, pd.Series) or entry_signal.dtype != bool:
-                raise TypeError(f"Signal {signal.get_signal_tag()} returned an invalid entry signal type.")
+            # Create a lazy evaluation function for the signal
+            def lazy_evaluation():
+                entry_signal = signal.entry_signal(dataframe, metadata)
 
-            # Aplicar señales solo si no hay downtrend y no se han asignado previamente
-            new_signals = (
-                entry_signal & (dataframe["enter_long"] == 0) & valid_rows
-            )
+                # Ensure entry_signal is a boolean Series
+                if not isinstance(entry_signal, pd.Series) or entry_signal.dtype != bool:
+                    raise TypeError(f"Signal {signal.get_signal_tag()} returned an invalid entry signal type.")
 
-            # Asignar 1 a 'enter_long' para las señales activas
-            dataframe.loc[new_signals, "enter_long"] = 1
+                return entry_signal
 
-            # Asignar etiquetas con el prefijo 'enter_' a 'enter_tag'
-            dataframe.loc[new_signals, "enter_tag"] = f"enter_{signal.get_signal_tag()}"
+            # Generate an initial mask to evaluate signals
+            new_signals = valid_rows & (dataframe["enter_long"] == 0)
 
-            # Registrar el par y las señales generadas
-            signal_count = new_signals.sum()
-            if signal_count > 0:
-                self.log.info(f"Signal {signal.get_signal_tag()} generated {signal_count} entry signal(s) for pair {pair}.")
+            # Apply signals lazily
+            if new_signals.any():
+                entry_signal = lazy_evaluation()  # Evaluate the signal only if necessary
+                final_signals = new_signals & entry_signal
 
-        # Confirmar que no hay sobrescrituras accidentales
+                # Assign 1 to 'enter_long' for active signals
+                dataframe.loc[final_signals, "enter_long"] = 1
+
+                # Assign tags with the prefix 'enter_' to 'enter_tag'
+                dataframe.loc[final_signals, "enter_tag"] = f"enter_{signal.get_signal_tag()}"
+
+                # Log the pair and the generated signals
+                signal_count = final_signals.sum()
+                if signal_count > 0:
+                    self.log.info(f"Signal {signal.get_signal_tag()} generated {signal_count} entry signal(s) for pair {pair}.")
+
+        # Confirm there are no accidental overwrites
         self.log.debug(f"Final dataframe state:\n{dataframe[['enter_long', 'enter_tag', 'is_downtrend']].tail()}")
 
         return dataframe

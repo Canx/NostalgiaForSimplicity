@@ -67,6 +67,13 @@ def calculate_rolling_max(df: pd.DataFrame, length: int, column: str = "close") 
     df[f"{column}_max_{length}"] = df[column].rolling(length).max()
     return df
 
+def calculate_adx(df: pd.DataFrame, length: int = 14) -> pd.DataFrame:
+
+    adx = ta.adx(df["high"], df["low"], df["close"], length=length)
+    df[f"ADX_{length}"] = adx[f"ADX_{length}"]
+    return df
+
+
 def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
     df = calculate_rsi(df, length=3)
@@ -88,6 +95,7 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df = calculate_aroon(df, length=14)
     df = calculate_stochrsi(df)
     df = calculate_bbands(df)
+    df = calculate_adx(df, length=14)
     df = calculate_is_downtrend(df)
 
     return df
@@ -104,6 +112,7 @@ def calculate_is_downtrend(df: pd.DataFrame) -> pd.DataFrame:
     # slope (1st derivative)
     df['EMA_12_slope'] = df['EMA_12'].diff()
     df['EMA_26_slope'] = df['EMA_26'].diff()
+    df['EMA_50_slope'] = df['EMA_50'].diff()
     df['EMA_200_slope'] = df['EMA_200'].diff()
 
     # acceleration (2nd derivative)
@@ -119,11 +128,14 @@ def calculate_is_downtrend(df: pd.DataFrame) -> pd.DataFrame:
     df['downtrend_signals'] = 0
 
     # Defines a threshold to consider a downtrend
-    threshold = 1
+    threshold = 5
 
     # Increase downtrend signals based on conditions (ordered from more to less reactive)
-    df['downtrend_signals'] += (df['OBV'] < df['OBV_SMA']).astype(int)
+    df['downtrend_signals'] += (df['OBV'] < df['OBV_SMA']).astype(int) *2
     df['downtrend_signals'] += (df['EMA_12_slope'] < 0).astype(int)
+    #df['downtrend_signals'] += (df["BBB_20_2.0"] > 0.25).astype(int)
+    df['downtrend_signals'] += (df["EMA_26_slope"] < 0).astype(int) * 2
+    df['downtrend_signals'] += (df["EMA_200_slope"] < 0).astype(int) * 2
     #df['downtrend_signals'] += (df['EMA_200_acceleration'] < 0).astype(int)
     #df['downtrend_signals'] += (df['EMA_12_acceleration'] < df['EMA_26_acceleration']).astype(int)
     #df['downtrend_signals'] += (df['EMA_12_slope'] < df['EMA_26_slope']).astype(int)

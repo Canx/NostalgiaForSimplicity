@@ -12,13 +12,16 @@ class NewtonSignal(Signal):
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
         """
-        Generate entry signal based on Bollinger Bands and RSI.
+        Generate entry signal based on EMA, RSI and (not) downtrend signals
         """
         condition = (
-            (df["close"] < df["EMA_200"]) &
-            (df["RSI_14"] < 50) &
+            (df["close"] < df["EMA_200"] * 0.99) &
+            (df["close"] > df["EMA_12"]) &
+            (df["high"] > df["EMA_26"]) &
+            (df["EMA_50_slope"] > 0) &
+            (df["RSI_14"] < 60) &
             (df["is_downtrend"] == False) &
-            ((df["is_downtrend"]).shift(1) == False)
+            (df["downtrend_signals"] >= 1)
         )
 
         #(df["close"] > df["EMA_12"]) &

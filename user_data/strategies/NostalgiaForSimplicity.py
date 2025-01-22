@@ -15,7 +15,7 @@ class NostalgiaForSimplicity(IStrategy):
 
     INTERFACE_VERSION = 3
     minimal_roi = {"40": 0.0, "30": 0.01, "20": 0.02, "0": 0.04}
-    stoploss = -0.1
+    stoploss = -0.05
     timeframe = "5m"
     startup_candle_count = 100
 
@@ -111,13 +111,6 @@ class NostalgiaForSimplicity(IStrategy):
 
         pair = metadata.get("pair", "Unknown")  # Retrieve the trading pair from metadata
 
-        # Check if "is_downtrend" exists; initialize if not
-        if "is_downtrend" not in dataframe.columns:
-            dataframe["is_downtrend"] = False  # Default to no downtrend
-
-        # Mask to avoid signals during a downtrend
-        valid_rows = ~dataframe["is_downtrend"]
-
         for signal in self.signals:
             if not signal.enabled:
                 continue
@@ -135,7 +128,7 @@ class NostalgiaForSimplicity(IStrategy):
                 return entry_signal
 
             # Generate an initial mask to evaluate signals
-            new_signals = valid_rows & (dataframe["enter_long"] == 0)
+            new_signals = (dataframe["enter_long"] == 0)
 
             # Apply signals lazily
             if new_signals.any():
@@ -152,9 +145,6 @@ class NostalgiaForSimplicity(IStrategy):
                 signal_count = final_signals.sum()
                 if signal_count > 0:
                     self.log.info(f"Signal {signal.get_signal_tag()} generated {signal_count} entry signal(s) for pair {pair}.")
-
-        # Confirm there are no accidental overwrites
-        self.log.debug(f"Final dataframe state:\n{dataframe[['enter_long', 'enter_tag', 'is_downtrend']].tail()}")
 
         return dataframe
 

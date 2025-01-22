@@ -103,6 +103,11 @@ class NostalgiaForSimplicity(IStrategy):
         Generate entry signals based on plugin logic, with custom tags for each signal,
         while avoiding entries during a downtrend.
         """
+        # Verificar que la vela actual tiene datos válidos
+        if dataframe.empty or dataframe.iloc[-1].isna().any():
+            self.log.warning(f"Skipping populate_entry_trend for {metadata.get('pair')} due to missing candle data.")
+            return dataframe
+
         # Ensure required columns exist
         if "enter_long" not in dataframe.columns:
             dataframe["enter_long"] = 0
@@ -154,6 +159,11 @@ class NostalgiaForSimplicity(IStrategy):
         """
         Generate exit signals based on plugin logic, with custom tags for each signal.
         """
+        # Verificar que la vela actual tiene datos válidos
+        if dataframe.empty or dataframe.iloc[-1].isna().any():
+            self.log.warning(f"Skipping populate_exit_trend for {metadata.get('pair')} due to missing candle data.")
+            return dataframe
+
         # Asegurar columnas necesarias
         if "exit_long" not in dataframe.columns:
             dataframe["exit_long"] = 0
@@ -187,5 +197,3 @@ class NostalgiaForSimplicity(IStrategy):
                 self.log.info(f"Signal {signal.get_signal_tag()} generated {signal_count} exit signal(s) for pair {pair}.")
 
         return dataframe
-
-

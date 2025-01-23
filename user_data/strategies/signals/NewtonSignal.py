@@ -15,13 +15,30 @@ class NewtonSignal(Signal):
         Generate entry signal based on EMA, RSI and (not) downtrend signals
         """
         condition = (
-            (df["close"] < df["EMA_200"] * 0.99) &
-            (df["close"] > df["EMA_12"]) &
-            (df["high"] > df["EMA_26"]) &
-            (df["EMA_50_slope"] > 0) &
-            (df["RSI_14"] < 60) &
-            (df["is_downtrend"] == False) &
-            (df["downtrend_signals"] >= 1)
+            (df["close"] < df["EMA_200"]) &
+            (df["close"] < df["EMA_12"]) &
+            (df["close"] > df["open"]) &
+            (df["close"].shift(1) < df["open"].shift(1)) & # Vela anterior era roja
+            
+            # Cuerpo de la vela anterior era más pequeña que la actual
+            (abs(df["close"].shift(1) - df["open"].shift(1)) < abs(df["close"] - df["open"])) &
+            (df["EMA_12_acceleration"] > 0) &
+            (df["EMA_26_acceleration"] > 0) &
+            (df["EMA_12"] < df["EMA_26"])
+
+            
+
+            # TODO: Comprobar que la EMA_12 y la EMA_26 están separandose
+
+
+            #(df["RSI_14"] < 60)
+            #(df["is_downtrend"] == True)
+            #(df["close"] > df["EMA_12"]) &
+            #(df["high"] > df["EMA_26"]) &
+            #(df["EMA_50_slope"] > 0) &
+            
+            
+            #(df["downtrend_signals"] >= 1)
         )
 
         #(df["close"] > df["EMA_12"]) &

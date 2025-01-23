@@ -14,8 +14,9 @@ class NostalgiaForSimplicity(IStrategy):
     """
 
     INTERFACE_VERSION = 3
-    minimal_roi = {"40": 0.0, "30": 0.01, "20": 0.02, "0": 0.04}
+    minimal_roi = {"60": 0.02, "120": 0.01, "180": 0.005, "240": 0.001}
     stoploss = -0.05
+    trailing_stop = False
     timeframe = "5m"
     startup_candle_count = 100
 

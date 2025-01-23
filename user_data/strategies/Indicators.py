@@ -110,14 +110,15 @@ def calculate_ema_slope(df: pd.DataFrame, length: int) -> pd.Series:
 def calculate_is_downtrend(df: pd.DataFrame) -> pd.DataFrame:
 
     # slope (1st derivative)
-    df['EMA_12_slope'] = df['EMA_12'].diff()
-    df['EMA_26_slope'] = df['EMA_26'].diff()
-    df['EMA_50_slope'] = df['EMA_50'].diff()
-    df['EMA_200_slope'] = df['EMA_200'].diff()
+    df['EMA_12_slope'] = df['EMA_12'].diff() / df["EMA_12"].shift()
+    df['EMA_26_slope'] = df['EMA_26'].diff() / df["EMA_26"].shift()
+    df['EMA_50_slope'] = df['EMA_50'].diff() / df["EMA_50"].shift()
+    df['EMA_200_slope'] = df['EMA_200'].diff() / df["EMA_200"].shift()
 
     # acceleration (2nd derivative)
     df['EMA_12_acceleration'] = df['EMA_12_slope'].diff()
     df['EMA_26_acceleration'] = df['EMA_26_slope'].diff()
+    df['EMA_50_acceleration'] = df['EMA_50_slope'].diff()
     df['EMA_200_acceleration'] = df['EMA_200_slope'].diff()
 
     # Volume average
@@ -128,16 +129,28 @@ def calculate_is_downtrend(df: pd.DataFrame) -> pd.DataFrame:
     df['downtrend_signals'] = 0
 
     # Defines a threshold to consider a downtrend
-    threshold = 5
+    threshold = 7
 
     # Increase downtrend signals based on conditions (ordered from more to less reactive)
-    df['downtrend_signals'] += (df['OBV'] < df['OBV_SMA']).astype(int) *2
+    df['downtrend_signals'] += (df["close"] < df['EMA_12']).astype(int)
+    df['downtrend_signals'] += (df["close"] < df['EMA_26']).astype(int)
+    df['downtrend_signals'] += (df["close"] < df['EMA_50']).astype(int)
+    df['downtrend_signals'] += (df["close"] < df['EMA_200']).astype(int)
+    df['downtrend_signals'] += (df['OBV'] < df['OBV_SMA']).astype(int)
     df['downtrend_signals'] += (df['EMA_12_slope'] < 0).astype(int)
     #df['downtrend_signals'] += (df["BBB_20_2.0"] > 0.25).astype(int)
-    df['downtrend_signals'] += (df["EMA_26_slope"] < 0).astype(int) * 2
-    df['downtrend_signals'] += (df["EMA_200_slope"] < 0).astype(int) * 2
-    #df['downtrend_signals'] += (df['EMA_200_acceleration'] < 0).astype(int)
-    #df['downtrend_signals'] += (df['EMA_12_acceleration'] < df['EMA_26_acceleration']).astype(int)
+    df['downtrend_signals'] += (df["EMA_26_slope"] < 0).astype(int)
+    df['downtrend_signals'] += (df["EMA_50_slope"] < 0).astype(int)
+    df['downtrend_signals'] += (df["EMA_200_slope"] < 0).astype(int)
+    df['downtrend_signals'] += ((df["EMA_200_slope"] < 0) & (df["EMA_200_acceleration"] < 0)).astype(int) * 2
+    df['downtrend_signals'] += (df['EMA_12_acceleration'] < 0).astype(int)
+    df['downtrend_signals'] += (df['EMA_26_acceleration'] < 0).astype(int)
+    df['downtrend_signals'] += (df['EMA_200_acceleration'] < 0).astype(int)
+    df['downtrend_signals'] += (df['EMA_50_acceleration'] < 0).astype(int)
+
+    # Las cortas por debajo de las largas
+    df['downtrend_signals'] += (df['EMA_50'] < df['EMA_200']).astype(int)
+    df['downtrend_signals'] += (df['EMA_12'] < df['EMA_26']).astype(int)
     #df['downtrend_signals'] += (df['EMA_12_slope'] < df['EMA_26_slope']).astype(int)
     #df['downtrend_signals'] += (df['close'] < df['EMA_50']).astype(int)
     #df['downtrend_signals'] += (df['close'] < df['EMA_200']).astype(int)

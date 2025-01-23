@@ -1,8 +1,10 @@
 import pandas_ta as ta
 import pandas as pd
+from pandas import DataFrame
 import numpy as np
+from scipy.stats import linregress
 
-def calculate_aroon(df: pd.DataFrame, length: int) -> pd.DataFrame:
+def calculate_aroon(df: DataFrame, length: int) -> DataFrame:
 
     aroon = ta.aroon(df["high"], df["low"], length=length)
     if isinstance(aroon, pd.DataFrame):
@@ -14,10 +16,10 @@ def calculate_aroon(df: pd.DataFrame, length: int) -> pd.DataFrame:
 
     return df
 
-def calculate_stochrsi(df: pd.DataFrame) -> pd.DataFrame:
+def calculate_stochrsi(df: DataFrame) -> DataFrame:
 
     stochrsi = ta.stochrsi(df["close"])
-    if isinstance(stochrsi, pd.DataFrame):
+    if isinstance(stochrsi, DataFrame):
         df["STOCHRSIk_14_14_3_3"] = stochrsi["STOCHRSIk_14_14_3_3"]
         df["STOCHRSId_14_14_3_3"] = stochrsi["STOCHRSId_14_14_3_3"]
     else:
@@ -26,7 +28,57 @@ def calculate_stochrsi(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def calculate_bbands(df: pd.DataFrame) -> pd.DataFrame:
+
+def calculate_slope_regression(df: pd.DataFrame, column: str, window: int) -> pd.Series:
+    slopes = []
+
+    for i in range(len(df)):
+        if i < window - 1:
+            slopes.append(None)  # No se puede calcular pendiente al inicio
+        else:
+            y = df[column].iloc[i - window + 1: i + 1].values
+            x = range(window)
+            slope, _, _, _, _ = linregress(x, y)
+            slopes.append(slope)
+    
+    return pd.Series(slopes, index=df.index)
+
+# Aplicar regresión lineal a %K y %D
+def calculate_slopes(df: pd.DataFrame, window: int = 5) -> pd.DataFrame:
+    # Slope for %K
+    df['slope_STOCHRSIk'] = calculate_slope_regression(df, 'STOCHRSIk_14_14_3_3', window)
+
+    # Slope for %D
+    df['slope_STOCHRSId'] = calculate_slope_regression(df, 'STOCHRSId_14_14_3_3', window)
+
+    return df
+
+
+def detect_divergences(dataframe: DataFrame) -> DataFrame:
+    # Initialize divergence columns
+    dataframe['hidden_bullish_div'] = 0
+    dataframe['hidden_bearish_div'] = 0
+
+    # Ensure the required columns exist
+    if 'STOCHRSIk_14_14_3_3' not in dataframe.columns:
+        raise ValueError("STOCHRSIk_14_14_3_3 column is missing. Make sure to calculate StochRSI before calling this function.")
+
+    # Look for divergences in the last N candles
+    for i in range(2, len(dataframe)):
+        # Hidden Bullish Divergence
+        if (dataframe['low'].iloc[i] < dataframe['low'].iloc[i-1] and  # Lower Low in price
+            dataframe['STOCHRSIk_14_14_3_3'].iloc[i] > dataframe['STOCHRSIk_14_14_3_3'].iloc[i-1]):  # Higher Low in StochRSI
+            dataframe.loc[i, 'hidden_bullish_div'] = 1
+
+        # Hidden Bearish Divergence
+        if (dataframe['high'].iloc[i] > dataframe['high'].iloc[i-1] and  # Higher High in price
+            dataframe['STOCHRSIk_14_14_3_3'].iloc[i] < dataframe['STOCHRSIk_14_14_3_3'].iloc[i-1]):  # Lower High in StochRSI
+            dataframe.loc[i, 'hidden_bearish_div'] = 1
+
+    return dataframe
+
+
+def calculate_bbands(df: DataFrame) -> DataFrame:
 
     bbands_20_2 = ta.bbands(df["close"], length=20, std=2)
     df["BBL_20_2.0"] = bbands_20_2["BBL_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
@@ -37,44 +89,44 @@ def calculate_bbands(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
-def calculate_willr(df: pd.DataFrame, length: int) -> pd.DataFrame:
+def calculate_willr(df: DataFrame, length: int) -> DataFrame:
 
     df[f"WILLR_{length}"] = ta.willr(df["high"], df["low"], df["close"], length=length)
     return df
 
-def calculate_rsi(df: pd.DataFrame, length: int) -> pd.DataFrame:
+def calculate_rsi(df: DataFrame, length: int) -> DataFrame:
 
     df[f"RSI_{length}"] = ta.rsi(df["close"], length=length)
     return df
 
-def calculate_sma(df: pd.DataFrame, length: int) -> pd.DataFrame:
+def calculate_sma(df: DataFrame, length: int) -> DataFrame:
 
     df[f"SMA_{length}"] = ta.sma(df["close"], length=length)
     return df
 
-def calculate_mfi(df: pd.DataFrame, length: int) -> pd.DataFrame:
+def calculate_mfi(df: DataFrame, length: int) -> DataFrame:
 
     df[f"MFI_{length}"] = ta.mfi(df["high"], df["low"], df["close"], df["volume"], length=length)
     return df
 
-def calculate_ema(df: pd.DataFrame, length: int) -> pd.DataFrame:
+def calculate_ema(df: DataFrame, length: int) -> DataFrame:
 
     df[f"EMA_{length}"] = ta.ema(df["close"], length=length)
     return df
 
-def calculate_rolling_max(df: pd.DataFrame, length: int, column: str = "close") -> pd.DataFrame:
+def calculate_rolling_max(df: DataFrame, length: int, column: str = "close") -> DataFrame:
 
     df[f"{column}_max_{length}"] = df[column].rolling(length).max()
     return df
 
-def calculate_adx(df: pd.DataFrame, length: int = 14) -> pd.DataFrame:
+def calculate_adx(df: DataFrame, length: int = 14) -> DataFrame:
 
     adx = ta.adx(df["high"], df["low"], df["close"], length=length)
     df[f"ADX_{length}"] = adx[f"ADX_{length}"]
     return df
 
 
-def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
+def add_indicators(df: DataFrame) -> DataFrame:
 
     df = calculate_rsi(df, length=3)
     df = calculate_rsi(df, length=4)
@@ -93,27 +145,31 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df = calculate_rolling_max(df, length=48, column="close")
 
     df = calculate_aroon(df, length=14)
+
     df = calculate_stochrsi(df)
-    df = calculate_bbands(df)
-    df = calculate_adx(df, length=14)
+    #df = detect_divergences(df)
+    df = calculate_slopes(df, window=5)
+
+    #df = calculate_bbands(df)
+    #df = calculate_adx(df, length=14)
     df = calculate_is_downtrend(df)
 
     return df
 
 
-def calculate_ema_slope(df: pd.DataFrame, length: int) -> pd.Series:
+def calculate_ema_slope(df: DataFrame, length: int) -> pd.Series:
 
     ema = ta.ema(df['close'], length=length)
     return ema.diff()
 
 
-def calculate_is_downtrend(df: pd.DataFrame) -> pd.DataFrame:
+def calculate_is_downtrend(df: DataFrame) -> DataFrame:
 
     # slope (1st derivative)
-    df['EMA_12_slope'] = df['EMA_12'].diff()
-    df['EMA_26_slope'] = df['EMA_26'].diff()
-    df['EMA_50_slope'] = df['EMA_50'].diff()
-    df['EMA_200_slope'] = df['EMA_200'].diff()
+    df['EMA_12_slope'] = df['EMA_12'].diff() / df["EMA_12"].shift()
+    df['EMA_26_slope'] = df['EMA_26'].diff() / df["EMA_26"].shift()
+    df['EMA_50_slope'] = df['EMA_50'].diff() / df["EMA_50"].shift()
+    df['EMA_200_slope'] = df['EMA_200'].diff()  / df["EMA_200"].shift()
 
     # acceleration (2nd derivative)
     df['EMA_12_acceleration'] = df['EMA_12_slope'].diff()
@@ -128,7 +184,7 @@ def calculate_is_downtrend(df: pd.DataFrame) -> pd.DataFrame:
     df['downtrend_signals'] = 0
 
     # Defines a threshold to consider a downtrend
-    threshold = 5
+    threshold = 6
 
     # Increase downtrend signals based on conditions (ordered from more to less reactive)
     df['downtrend_signals'] += (df['OBV'] < df['OBV_SMA']).astype(int) *2
@@ -142,6 +198,8 @@ def calculate_is_downtrend(df: pd.DataFrame) -> pd.DataFrame:
     #df['downtrend_signals'] += (df['close'] < df['EMA_50']).astype(int)
     #df['downtrend_signals'] += (df['close'] < df['EMA_200']).astype(int)
     
+    # StockRSI low
+    df['downtrend_signals'] += (df["STOCHRSIk_14_14_3_3"] < 30).astype(int)
 
     
     # Need to have a minimum ADX to show downtrend

@@ -14,7 +14,7 @@ class NostalgiaForSimplicity(IStrategy):
     """
 
     INTERFACE_VERSION = 3
-    minimal_roi = {"40": 0.0, "30": 0.01, "20": 0.02, "0": 0.04}
+    minimal_roi = {"0": 10} # Disabled ROI, need 1000% profit
     stoploss = -0.05
     timeframe = "5m"
     startup_candle_count = 100

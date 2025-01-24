@@ -2,7 +2,6 @@ import pandas_ta as ta
 import pandas as pd
 from pandas import DataFrame
 import numpy as np
-from scipy.stats import linregress
 
 def calculate_aroon(df: DataFrame, length: int) -> DataFrame:
 
@@ -26,30 +25,8 @@ def calculate_stochrsi(df: DataFrame) -> DataFrame:
         df["STOCHRSIk_14_14_3_3"] = np.nan
         df["STOCHRSId_14_14_3_3"] = np.nan
 
-    return df
-
-
-def calculate_slope_regression(df: pd.DataFrame, column: str, window: int) -> pd.Series:
-    slopes = []
-
-    for i in range(len(df)):
-        if i < window - 1:
-            slopes.append(None)  # No se puede calcular pendiente al inicio
-        else:
-            y = df[column].iloc[i - window + 1: i + 1].values
-            x = range(window)
-            slope, _, _, _, _ = linregress(x, y)
-            slopes.append(slope)
-    
-    return pd.Series(slopes, index=df.index)
-
-# Aplicar regresión lineal a %K y %D
-def calculate_slopes(df: pd.DataFrame, window: int = 5) -> pd.DataFrame:
-    # Slope for %K
-    df['slope_STOCHRSIk'] = calculate_slope_regression(df, 'STOCHRSIk_14_14_3_3', window)
-
-    # Slope for %D
-    df['slope_STOCHRSId'] = calculate_slope_regression(df, 'STOCHRSId_14_14_3_3', window)
+    # Calculate slopes
+    df["STOCHRSIk_14_14_3_3_slope"] = df["STOCHRSIk_14_14_3_3"].diff() / df["STOCHRSIk_14_14_3_3"].shift()
 
     return df
 
@@ -147,8 +124,6 @@ def add_indicators(df: DataFrame) -> DataFrame:
     df = calculate_aroon(df, length=14)
 
     df = calculate_stochrsi(df)
-    #df = detect_divergences(df)
-    df = calculate_slopes(df, window=5)
 
     #df = calculate_bbands(df)
     #df = calculate_adx(df, length=14)

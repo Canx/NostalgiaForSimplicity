@@ -51,31 +51,31 @@ class NostalgiaForSimplicity(IStrategy):
 
                 # Obtener el tiempo de modificación del archivo
                 last_modified_time = os.path.getmtime(file_path)
-                self.log.info(f"Archivo: {file}, Marca de tiempo actual: {last_modified_time}")
+                self.log.debug(f"Archivo: {file}, Marca de tiempo actual: {last_modified_time}")
 
                 # Si es la primera iteración, solo registrar las fechas
                 if not self._has_run_once:
                     self._last_loaded_files[file_path] = last_modified_time
-                    self.log.info(f"Primera ejecución: registrada marca de tiempo para {file}.")
+                    self.log.debug(f"Primera ejecución: registrada marca de tiempo para {file}.")
                 else:
                     # Detectar cambios en iteraciones posteriores
                     prev_time = self._last_loaded_files.get(file_path)
                     if prev_time != last_modified_time:
-                        self.log.info(f"Cambio detectado en {file}: {prev_time} -> {last_modified_time}")
+                        self.log.debug(f"Cambio detectado en {file}: {prev_time} -> {last_modified_time}")
                         self._last_loaded_files[file_path] = last_modified_time
                         signals_modified = True
 
         # En la primera iteración, simplemente marcar como completada y salir
         if not self._has_run_once:
-            self.log.info("Primera ejecución completada: las marcas de tiempo han sido registradas.")
+            self.log.debug("Primera ejecución completada: las marcas de tiempo han sido registradas.")
             self._has_run_once = True
             return
 
         # Recargar señales y procesar solo si se detectaron cambios
         if signals_modified:
-            self.log.info("Cambios detectados en señales. Recargando...")
+            self.log.debug("Cambios detectados en señales. Recargando...")
             self.signals = self.load_signals()
-            self.log.info("Señales recargadas.")
+            self.log.debug("Señales recargadas.")
 
             # Forzar la actualización de los pares para regenerar señales de entrada y salida
             current_pairs = self.dp.current_whitelist() if callable(self.dp.current_whitelist) else self.dp.current_whitelist

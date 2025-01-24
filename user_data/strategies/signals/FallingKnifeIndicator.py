@@ -8,9 +8,11 @@ class FallingKnifeIndicator(Signal):
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:
-        condition = ()
+        df["falling_knife_start"] = (df["EMA_5_acceleration"] < -0.0005)
 
+        # Verificar si el falling_knife_start ocurrió en las últimas 10 velas
+        X = 10
+        df["falling_knife_recent"] = (df["falling_knife_start"].rolling(window=X).apply(lambda x: x.any(), raw=True))
 
-        df["falling_knife"] = condition
-        
+        df["falling_knife"] = (df["EMA_5_slope"] < 0) & df["falling_knife_recent"]
         return df

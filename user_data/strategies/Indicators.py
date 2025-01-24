@@ -111,6 +111,7 @@ def add_indicators(df: DataFrame) -> DataFrame:
     df = calculate_sma(df, length=16)
     df = calculate_rsi(df, length=14)
     df = calculate_mfi(df, length=14)
+    df = calculate_ema(df, length=5)
     df = calculate_ema(df, length=9)
     df = calculate_ema(df, length=12)
     df = calculate_ema(df, length=20)
@@ -141,12 +142,14 @@ def calculate_ema_slope(df: DataFrame, length: int) -> pd.Series:
 def calculate_is_downtrend(df: DataFrame) -> DataFrame:
 
     # slope (1st derivative)
+    df['EMA_5_slope'] = df['EMA_5'].diff() / df["EMA_5"].shift()
     df['EMA_12_slope'] = df['EMA_12'].diff() / df["EMA_12"].shift()
     df['EMA_26_slope'] = df['EMA_26'].diff() / df["EMA_26"].shift()
     df['EMA_50_slope'] = df['EMA_50'].diff() / df["EMA_50"].shift()
     df['EMA_200_slope'] = df['EMA_200'].diff() / df["EMA_200"].shift()
 
     # acceleration (2nd derivative)
+    df['EMA_5_acceleration'] = df['EMA_5_slope'].diff()
     df['EMA_12_acceleration'] = df['EMA_12_slope'].diff()
     df['EMA_26_acceleration'] = df['EMA_26_slope'].diff()
     df['EMA_50_acceleration'] = df['EMA_50_slope'].diff()

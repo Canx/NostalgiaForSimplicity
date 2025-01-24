@@ -143,6 +143,7 @@ def calculate_is_downtrend(df: DataFrame) -> DataFrame:
 
     # slope (1st derivative)
     df['EMA_5_slope'] = df['EMA_5'].diff() / df["EMA_5"].shift()
+    df['EMA_9_slope'] = df['EMA_9'].diff() / df["EMA_9"].shift()
     df['EMA_12_slope'] = df['EMA_12'].diff() / df["EMA_12"].shift()
     df['EMA_26_slope'] = df['EMA_26'].diff() / df["EMA_26"].shift()
     df['EMA_50_slope'] = df['EMA_50'].diff() / df["EMA_50"].shift()
@@ -150,6 +151,7 @@ def calculate_is_downtrend(df: DataFrame) -> DataFrame:
 
     # acceleration (2nd derivative)
     df['EMA_5_acceleration'] = df['EMA_5_slope'].diff()
+    df['EMA_9_acceleration'] = df['EMA_9_slope'].diff()
     df['EMA_12_acceleration'] = df['EMA_12_slope'].diff()
     df['EMA_26_acceleration'] = df['EMA_26_slope'].diff()
     df['EMA_50_acceleration'] = df['EMA_50_slope'].diff()

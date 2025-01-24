@@ -12,7 +12,7 @@ class EmaStochastic(Signal):
         condition = (
             (df["STOCHRSIk_14_14_3_3_slope"] > 0)
             & (df["STOCHRSIk_14_14_3_3_slope"].shift(1) < 0)
-            & (df["is_downtrend"] == False)
+            & (df["falling_knife"] == False)
             #& (df["EMA_12_slope"] > 0)
             #& (df["close"] < df["EMA_200"]) &
             #& (df["EMA_200_slope"] > 0)

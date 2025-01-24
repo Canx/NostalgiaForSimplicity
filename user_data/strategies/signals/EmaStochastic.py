@@ -4,8 +4,9 @@ import pandas as pd
 
 
 class EmaStochastic(Signal):
-    def __init__(self, priority: int = 1):
+    def __init__(self, priority: int = 10):
         super().__init__(priority, enabled=True)
+    
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
         condition = (

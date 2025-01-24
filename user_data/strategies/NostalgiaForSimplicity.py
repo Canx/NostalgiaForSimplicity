@@ -135,8 +135,12 @@ class NostalgiaForSimplicity(IStrategy):
         return plot_config
 
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
-        df = ind.add_indicators(df)
-
+        df = ind.add_indicators(df)  # Indicadores globales (quitar cuando no sea necesario)
+        
+        for signal in self.signals:
+            if signal.enabled:
+                self.log.debug(f"Populating indicators for signal {signal.get_signal_tag()}.")
+                df = signal.populate_indicators(df)  # Llamar al método de cada señal
         return df
     
 

@@ -44,6 +44,12 @@ class Signal:
         """
         return self.__class__.__name__
 
+    def populate_indicators(self, dataframe):
+        """
+        Method to populate indicators for this specific signal.
+        """
+        return dataframe  # Devuelve el DataFrame sin modificar como predeterminado.
+    
     def entry_signal(self, dataframe: DataFrame, metadata: dict) -> pd.Series:
         """
         Generate entry signals based on plugin-specific logic. Default returns False for all rows.

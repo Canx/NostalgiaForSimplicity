@@ -54,18 +54,6 @@ def detect_divergences(dataframe: DataFrame) -> DataFrame:
 
     return dataframe
 
-
-def calculate_bbands(df: DataFrame) -> DataFrame:
-
-    bbands_20_2 = ta.bbands(df["close"], length=20, std=2)
-    df["BBL_20_2.0"] = bbands_20_2["BBL_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
-    df["BBM_20_2.0"] = bbands_20_2["BBM_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
-    df["BBU_20_2.0"] = bbands_20_2["BBU_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
-    df["BBB_20_2.0"] = bbands_20_2["BBB_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
-    df["BBP_20_2.0"] = bbands_20_2["BBP_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
-
-    return df
-
 def calculate_willr(df: DataFrame, length: int) -> DataFrame:
 
     df[f"WILLR_{length}"] = ta.willr(df["high"], df["low"], df["close"], length=length)
@@ -126,7 +114,5 @@ def add_indicators(df: DataFrame) -> DataFrame:
 
     df = calculate_stochrsi(df)
 
-    #df = calculate_bbands(df)
-    #df = calculate_adx(df, length=14)
 
     return df

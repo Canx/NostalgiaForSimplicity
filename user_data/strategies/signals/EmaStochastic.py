@@ -13,11 +13,12 @@ class EmaStochastic(Signal):
             #(df["STOCHRSIk_14_14_3_3_slope"] > 0)
             #& (df["STOCHRSIk_14_14_3_3_slope"].shift(1) < 0)
             (df["falling_knife"] == False)
+            & (df["falling_knife"].shift(1) == True)
             #& (df["is_downtrend"] == False)
-            #& (df["is_downtrend"].shift(1) == False)
+            #& (df["is_downtrend"].shift(1) == True)
             & (df["EMA_9_acceleration"] > 0)
-            & (df["EMA_5_slope"] > 0)
-            & (df["STOCHRSIk_14_14_3_3"] < 50)
+            & (df["EMA_5_acceleration"] > 0)
+            #& (df["STOCHRSIk_14_14_3_3"] < 50)
             #& (df["OBV"] > df["OBV_SMA"])
             #& (df["EMA_50_slope"] > 0)
             #& (df["EMA_12_slope"].shift(1) < 0)
@@ -32,10 +33,10 @@ class EmaStochastic(Signal):
 
         return condition
     
-    def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
-        condition = (
-            (df["falling_knife"] == True)
-        )
+    # def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
+    #     condition = (
+    #         (df["falling_knife"] == True)
+    #     )
 
-        return condition
+    #     return condition
         

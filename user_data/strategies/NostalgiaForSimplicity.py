@@ -15,16 +15,50 @@ class NostalgiaForSimplicity(IStrategy):
     """
 
     INTERFACE_VERSION = 3
-    minimal_roi = {"0": 10} # Disabled
 
-    stoploss = -0.10
+    protections = [
+        {
+            "method": "LowProfitPairs",
+            "lookback_period_candles": 60,
+            "trade_limit": 1,
+            "stop_duration": 60,
+            "required_profit": -0.05
+        },
+        {
+            "method": "CooldownPeriod",
+            "stop_duration_candles": 2
+        }
+    ]
+
+    order_types = {
+        'buy': 'limit',
+        'sell': 'limit',
+        'trailing_stop_loss': 'limit',
+        'stoploss': 'limit',
+        'stoploss_on_exchange': False
+    }
+
+    minimal_roi = {
+        "0": 0.08,
+        "10": 0.04,
+        "30": 0.02,
+        "60": 0.01
+    }
+
+    stoploss = -0.15
+
+    # Trailing stoploss
     trailing_stop = True
-    trailing_stop_positive = 0.02
-    trailing_stop_positive_offset = 0.0
-    trailing_only_offset_is_reached = False  # Default - not necessary for this example
-
+    trailing_only_offset_is_reached = True
+    trailing_stop_positive = 0.01
+    trailing_stop_positive_offset = 0.04
+    use_custom_stoploss = False
+    
     timeframe = "5m"
-    startup_candle_count = 100
+    startup_candle_count = 300
+
+    process_only_new_candles = True
+
 
     def __init__(self, config: dict) -> None:
         self.log = logging.getLogger(__name__)

@@ -187,16 +187,16 @@ class NostalgiaForSimplicity(IStrategy):
 
     @informative('15m')
     def populate_indicators_15m(self, df: DataFrame, metadata: dict) -> DataFrame:
-        df = ind.calculate_aroon(df, length=14)
+        #df = ind.calculate_aroon(df, length=14)
 
         return df
 
 
     @informative('1h')
     def populate_indicators_1h(self, df: DataFrame, metadata: dict) -> DataFrame:
-        df = ind.calculate_willr(df, length=84)
-        df = ind.calculate_stochrsi(df)
-        df = ind.calculate_bbands(df)
+        #df = ind.calculate_willr(df, length=84)
+        #df = ind.calculate_stochrsi(df)
+        #df = ind.calculate_bbands(df)
 
         return df
 

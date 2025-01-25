@@ -1,3 +1,4 @@
+from freqtrade.strategy import IStrategy
 from pandas import DataFrame
 import pandas as pd
 import logging
@@ -18,6 +19,9 @@ class Signal:
         self.enabled = enabled  # Estado de activación/desactivación del plugin
         self.log = logging.getLogger(__name__)
 
+    def config_strategy(self, strat: IStrategy):
+        pass
+    
     def get_priority(self) -> int:
         """
         Returns the priority of the signal.

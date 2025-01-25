@@ -16,56 +16,12 @@ class NostalgiaForSimplicity(IStrategy):
 
     INTERFACE_VERSION = 3
 
-    protections = [
-        {
-            "method": "LowProfitPairs",
-            "lookback_period_candles": 60,
-            "trade_limit": 1,
-            "stop_duration": 60,
-            "required_profit": -0.05
-        },
-        {
-            "method": "CooldownPeriod",
-            "stop_duration_candles": 2
-        }
-    ]
-
-    order_types = {
-        'buy': 'limit',
-        'sell': 'limit',
-        'trailing_stop_loss': 'limit',
-        'stoploss': 'limit',
-        'stoploss_on_exchange': False
-    }
-
-    minimal_roi = {
-        "0": 0.20,
-        "30": 0.10,
-        "60": 0.08,
-        "120": 0.04,
-        "240": 0.02,
-        "480": 0.01
-    }
-
-    stoploss = -0.15
-
-    # Trailing stoploss
-    trailing_stop = True
-    trailing_only_offset_is_reached = True
-    trailing_stop_positive = 0.01
-    trailing_stop_positive_offset = 0.04
-    use_custom_stoploss = False
-    
-    timeframe = "5m"
-    startup_candle_count = 300
-
-    process_only_new_candles = True
-
-
     def __init__(self, config: dict) -> None:
         self.log = logging.getLogger(__name__)
-        super().__init__(config)
         self.signals = self.load_signals()
+        self.config_strategy()
+        super().__init__(config)
+        
 
 
     def bot_loop_start(self, current_time: datetime, **kwargs) -> None:
@@ -174,6 +130,14 @@ class NostalgiaForSimplicity(IStrategy):
         }
 
         return plot_config
+
+    def config_strategy(self):
+        
+        for signal in self.signals:
+            if signal.enabled:
+                self.log.debug(f"Configuring strategy... {signal.get_signal_tag()}.")
+                signal.config_strategy(self)  # Llamar al método de cada señal
+
 
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
         df = ind.add_indicators(df)  # Indicadores globales (quitar cuando no sea necesario)

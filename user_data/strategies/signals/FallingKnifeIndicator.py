@@ -3,7 +3,7 @@ from pandas import DataFrame
 
 
 class FallingKnifeIndicator(Signal):
-    def __init__(self, priority: int = 1):
+    def __init__(self, priority: int = 10):
         super().__init__(priority, enabled=True)
     
 

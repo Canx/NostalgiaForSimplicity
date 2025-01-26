@@ -71,4 +71,19 @@ class DowntrendIndicator(Signal):
         # Set is_downtrend to True if downtrend_signals reaches the threshold
         df['is_downtrend'] = df['downtrend_signals'] >= threshold
 
+        # Identificar la longitud de los períodos consecutivos de "is_downtrend"
+        df["downtrend_length"] = (
+            df["is_downtrend"].astype(int).groupby((df["is_downtrend"] != df["is_downtrend"].shift()).cumsum()).cumsum()
+        )
+        
+        # Reseteamos la longitud a 0 si el período no es un "downtrend"
+        df["downtrend_length"] = df["downtrend_length"].where(df["is_downtrend"], 0)
+
+        # Identificar dónde termina un downtrend de al menos X velas
+        df["end_of_downtrend"] = (
+            (df["is_downtrend"] == False)  # No estamos en un downtrend
+            & (df["is_downtrend"].shift(1) == True)  # En la vela anterior estábamos en un downtrend
+            & (df["downtrend_length"].shift(1) >= 5)  # El downtrend anterior tuvo al menos 5 velas
+        )
+
         return df

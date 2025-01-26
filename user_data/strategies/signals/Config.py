@@ -35,23 +35,25 @@ class Config(Signal):
             'stoploss_on_exchange': False
         }
 
+        # Dar 8 horas de margen para que el trailing stoploss crezca.
         strat.minimal_roi = {
-            "0": 0.20,
-            "5": 0.10,
-            "15": 0.08,
-            "30": 0.06,
+            "0": 0.10,
+            "5": 0.09,
+            "10": 0.08,
+            "15": 0.06,
+            "30": 0.05,
             "60": 0.04,
             "120": 0.02,
             "180": 0.01
         }
 
-        strat.stoploss = -0.05
+        strat.stoploss = -0.02
 
         # Trailing stoploss
         strat.trailing_stop = True
-        strat.trailing_only_offset_is_reached = True
-        strat.trailing_stop_positive = 0.01
-        strat.trailing_stop_positive_offset = 0.04
+        strat.trailing_only_offset_is_reached = False
+        #strat.trailing_stop_positive = 0.001
+        #strat.trailing_stop_positive_offset = 0.015
         strat.use_custom_stoploss = False
         
         strat.timeframe = "5m"

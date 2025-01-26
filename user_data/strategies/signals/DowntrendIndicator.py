@@ -83,7 +83,7 @@ class DowntrendIndicator(Signal):
         df["end_of_downtrend"] = (
             (df["is_downtrend"] == False)  # No estamos en un downtrend
             & (df["is_downtrend"].shift(1) == True)  # En la vela anterior estábamos en un downtrend
-            & (df["downtrend_length"].shift(1) >= 5)  # El downtrend anterior tuvo al menos 5 velas
+            #& (df["downtrend_length"].shift(1) >= 20)  # El downtrend anterior tuvo al menos 5 velas
         )
 
         return df

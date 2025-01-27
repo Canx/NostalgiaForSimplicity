@@ -71,7 +71,7 @@ class NostalgiaForSimplicity(IStrategy):
         # Recargar señales y procesar solo si se detectaron cambios
         if signals_modified:
             self.log.debug("Cambios detectados en señales. Recargando...")
-            self.signals = self.load_signals()
+            self.signals = self.load("signals", Signal)
             self.log.debug("Señales recargadas.")
 
             # Forzar la actualización de los pares para regenerar señales de entrada y salida
@@ -80,12 +80,13 @@ class NostalgiaForSimplicity(IStrategy):
             self.analyze(current_pairs)
             self.process_only_new_candles = True
 
-    def load_signals(self):
+
+    def load(self, signal_dir="signals", base_class=Signal):
         """
         Dynamically load and sort signals by priority.
         """
         signals = []
-        signal_dir = os.path.join(os.path.dirname(__file__), "signals")
+        signal_dir = os.path.join(os.path.dirname(__file__), signal_dir)
 
         for file in os.listdir(signal_dir):
             if file.endswith(".py") and file != "__init__.py":
@@ -100,7 +101,7 @@ class NostalgiaForSimplicity(IStrategy):
                 # Search for subclasses of Signal
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
-                    if isinstance(attr, type) and issubclass(attr, Signal) and attr is not Signal:
+                    if isinstance(attr, type) and issubclass(attr, base_class) and attr is not base_class:
                         signals.append(attr())
 
         # Sort signals by priority

@@ -26,41 +26,18 @@ class NostalgiaForSimplicity(IStrategy):
 
     def bot_loop_start(self, current_time: datetime, **kwargs) -> None:
         """
-        Called once before the bot starts. Checks for modified signals and reloads if needed.
+        Called once before the bot starts. Checks for modified signals and indicators and reloads if needed.
         """
-
         # Verificar si es la primera vez que se ejecuta
         if not hasattr(self, '_has_run_once'):
             self._has_run_once = False
 
-        # Ruta del directorio de señales
-        signal_dir = os.path.join(os.path.dirname(__file__), "signals")
-
-        # Comprobar si hay señales modificadas (siempre se ejecuta)
+        # Inicializar almacenamiento para archivos monitoreados
         if not hasattr(self, "_last_loaded_files"):
             self._last_loaded_files = {}
 
-        signals_modified = False  # Bandera para detectar cambios en los archivos
-
-        for file in os.listdir(signal_dir):
-            if file.endswith(".py") and file != "__init__.py":
-                file_path = os.path.join(signal_dir, file)
-
-                # Obtener el tiempo de modificación del archivo
-                last_modified_time = os.path.getmtime(file_path)
-                self.log.debug(f"Archivo: {file}, Marca de tiempo actual: {last_modified_time}")
-
-                # Si es la primera iteración, solo registrar las fechas
-                if not self._has_run_once:
-                    self._last_loaded_files[file_path] = last_modified_time
-                    self.log.debug(f"Primera ejecución: registrada marca de tiempo para {file}.")
-                else:
-                    # Detectar cambios en iteraciones posteriores
-                    prev_time = self._last_loaded_files.get(file_path)
-                    if prev_time != last_modified_time:
-                        self.log.debug(f"Cambio detectado en {file}: {prev_time} -> {last_modified_time}")
-                        self._last_loaded_files[file_path] = last_modified_time
-                        signals_modified = True
+        # Verificar cambios en archivos
+        files_modified = self._check_for_file_changes()
 
         # En la primera iteración, simplemente marcar como completada y salir
         if not self._has_run_once:
@@ -68,17 +45,65 @@ class NostalgiaForSimplicity(IStrategy):
             self._has_run_once = True
             return
 
-        # Recargar señales y procesar solo si se detectaron cambios
-        if signals_modified:
-            self.log.debug("Cambios detectados en señales. Recargando...")
-            self.signals = self.load("signals", Signal)
-            self.log.debug("Señales recargadas.")
+        # Recargar señales e indicadores si se detectaron cambios
+        if files_modified.get("signals"):
+            self._reload_component("signals", Signal)
+            self._refresh_signals()
 
-            # Forzar la actualización de los pares para regenerar señales de entrada y salida
-            current_pairs = self.dp.current_whitelist() if callable(self.dp.current_whitelist) else self.dp.current_whitelist
-            self.process_only_new_candles = False
-            self.analyze(current_pairs)
-            self.process_only_new_candles = True
+        if files_modified.get("indicators"):
+            self._reload_component("indicators", Signal)
+
+    def _check_for_file_changes(self) -> dict:
+        """
+        Verifica los cambios en los archivos de las carpetas "signals" y "indicators".
+        """
+        directories = [
+            ("signals", "signals"),
+            ("indicators", "indicators"),
+        ]
+        files_modified = {"signals": False, "indicators": False}
+
+        for dir_name, attr_name in directories:
+            dir_path = os.path.join(os.path.dirname(__file__), dir_name)
+
+            for file in os.listdir(dir_path):
+                if file.endswith(".py") and file != "__init__.py":
+                    file_path = os.path.join(dir_path, file)
+
+                    # Obtener el tiempo de modificación del archivo
+                    last_modified_time = os.path.getmtime(file_path)
+                    self.log.debug(f"Archivo: {file}, Marca de tiempo actual: {last_modified_time}")
+
+                    # Si es la primera iteración, solo registrar las fechas
+                    if not self._has_run_once:
+                        self._last_loaded_files[file_path] = last_modified_time
+                        self.log.debug(f"Primera ejecución: registrada marca de tiempo para {file}.")
+                    else:
+                        # Detectar cambios en iteraciones posteriores
+                        prev_time = self._last_loaded_files.get(file_path)
+                        if prev_time != last_modified_time:
+                            self.log.debug(f"Cambio detectado en {file}: {prev_time} -> {last_modified_time}")
+                            self._last_loaded_files[file_path] = last_modified_time
+                            files_modified[attr_name] = True
+
+        return files_modified
+
+    def _reload_component(self, component_name: str, loader) -> None:
+        """
+        Recarga un componente especificado (signals o indicators).
+        """
+        self.log.debug(f"Recargando {component_name}...")
+        setattr(self, component_name, self.load(component_name, loader))
+        self.log.debug(f"{component_name.capitalize()} recargados.")
+
+    def _refresh_signals(self) -> None:
+        """
+        Fuerza la actualización de los pares para regenerar señales de entrada y salida.
+        """
+        current_pairs = self.dp.current_whitelist() if callable(self.dp.current_whitelist) else self.dp.current_whitelist
+        self.process_only_new_candles = False
+        self.analyze(current_pairs)
+        self.process_only_new_candles = True
 
 
     def load(self, signal_dir="signals", base_class=Signal):

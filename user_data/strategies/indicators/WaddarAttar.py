@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 
-class WaddarAttarIndicator(Signal):
+class WaddarAttar(Signal):
     def __init__(self, priority: int = 10):
         super().__init__(priority, enabled=False)
     

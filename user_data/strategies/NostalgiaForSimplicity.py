@@ -18,7 +18,7 @@ class NostalgiaForSimplicity(IStrategy):
 
     def __init__(self, config: dict) -> None:
         self.log = logging.getLogger(__name__)
-        self.signals = self.load_signals()
+        self.signals = self.load("signals", Signal)
         self.config_strategy()
         super().__init__(config)
         

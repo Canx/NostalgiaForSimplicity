@@ -4,7 +4,7 @@ import pandas_ta as ta
 import numpy as np
 
 
-class DowntrendIndicator(Signal):
+class Downtrend(Signal):
     def __init__(self, priority: int = 10):
         super().__init__(priority, enabled=False)
     

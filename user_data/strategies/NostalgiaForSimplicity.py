@@ -18,6 +18,9 @@ class NostalgiaForSimplicity(IStrategy):
 
     def __init__(self, config: dict) -> None:
         self.log = logging.getLogger(__name__)
+        self.log.info("INICIANDO...")
+        self.indicators = self.load("indicators", Signal)
+        self.log.info(f"Indicadores cargados: {[type(ind).__name__ for ind in self.indicators]}")
         self.signals = self.load("signals", Signal)
         self.config_strategy()
         super().__init__(config)
@@ -41,25 +44,31 @@ class NostalgiaForSimplicity(IStrategy):
 
         # En la primera iteración, simplemente marcar como completada y salir
         if not self._has_run_once:
-            self.log.debug("Primera ejecución completada: las marcas de tiempo han sido registradas.")
+            self.log.info("Primera ejecución completada: las marcas de tiempo han sido registradas.")
             self._has_run_once = True
             return
 
-        # Recargar señales e indicadores si se detectaron cambios
+        # Recargar señales e indicadores solo si se detectaron cambios
         if files_modified.get("signals"):
+            self.log.info("Cambios detectados en 'signals'. Recargando...")
             self._reload_component("signals", Signal)
             self._refresh_signals()
 
         if files_modified.get("indicators"):
+            self.log.info("Cambios detectados en 'indicators'. Recargando...")
             self._reload_component("indicators", Signal)
+            self._reload_component("signals", Signal)
+            self._refresh_signals()
+
+            
 
     def _check_for_file_changes(self) -> dict:
         """
         Verifica los cambios en los archivos de las carpetas "signals" y "indicators".
         """
         directories = [
-            ("signals", "signals"),
             ("indicators", "indicators"),
+            ("signals", "signals"),
         ]
         files_modified = {"signals": False, "indicators": False}
 
@@ -108,29 +117,35 @@ class NostalgiaForSimplicity(IStrategy):
 
     def load(self, signal_dir="signals", base_class=Signal):
         """
-        Dynamically load and sort signals by priority.
+        Carga dinámicamente clases desde la carpeta dada y las retorna en una lista ordenada por prioridad.
         """
-        signals = []
+        components = []
         signal_dir = os.path.join(os.path.dirname(__file__), signal_dir)
+
+        if not os.path.exists(signal_dir):
+            self.log.warning(f"El directorio {signal_dir} no existe.")
+            return components
 
         for file in os.listdir(signal_dir):
             if file.endswith(".py") and file != "__init__.py":
                 module_name = file[:-3]
                 file_path = os.path.join(signal_dir, file)
 
-                # Dynamically import the module
+                # Dinámicamente importar el módulo
                 spec = importlib.util.spec_from_file_location(module_name, file_path)
                 module = importlib.util.module_from_spec(spec)
                 spec.loader.exec_module(module)
 
-                # Search for subclasses of Signal
+                # Buscar subclases del tipo base_class
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
                     if isinstance(attr, type) and issubclass(attr, base_class) and attr is not base_class:
-                        signals.append(attr())
+                        components.append(attr())
+                        self.log.debug(f"Clase cargada: {attr.__name__} desde {file_path}")
 
-        # Sort signals by priority
-        return sorted(signals, key=lambda signal: signal.get_priority())
+        # Ordenar las clases por prioridad si aplicable
+        return sorted(components, key=lambda component: component.get_priority())
+
 
 
     @property
@@ -161,7 +176,7 @@ class NostalgiaForSimplicity(IStrategy):
         
         for signal in self.signals:
             if signal.enabled:
-                self.log.debug(f"Configuring strategy... {signal.get_signal_tag()}.")
+                self.log.info(f"Configuring strategy... {signal.get_signal_tag()}.")
                 signal.config_strategy(self)  # Llamar al método de cada señal
 
 
@@ -169,10 +184,10 @@ class NostalgiaForSimplicity(IStrategy):
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
         df = ind.add_indicators(df)  # Indicadores globales (quitar cuando no sea necesario)
         
-        for signal in self.signals:
-            if signal.enabled:
-                self.log.debug(f"Populating indicators for signal {signal.get_signal_tag()}.")
-                df = signal.populate_indicators(df)  # Llamar al método de cada señal
+        for indicator in self.indicators:
+            if indicator.enabled:
+                self.log.debug(f"Populating indicators for {indicator.get_signal_tag()}.")
+                df = indicator.populate_indicators(df)  # Llamar al método de cada señal
         return df
     
 

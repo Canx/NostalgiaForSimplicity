@@ -21,7 +21,7 @@ class WaddarAttar(Signal):
         # MACD como diferencia entre EMA rápida y EMA lenta
         df['macd'] = df['ema_fast'] - df['ema_slow']
 
-        # Bandas de Bollinger (explosión de volatilidad)
+        # Bandas de Bollinger (explosión de volatilidad) 
         df['bollinger_mid'] = df['close'].rolling(window=channel_period).mean()
         df['bollinger_std'] = df['close'].rolling(window=channel_period).std()
         df['bollinger_upper'] = df['bollinger_mid'] + (sensitivity * df['bollinger_std'])

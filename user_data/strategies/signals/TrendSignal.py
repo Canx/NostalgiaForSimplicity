@@ -20,5 +20,5 @@ class TrendSignal(Signal):
             & (df["downtrend_start"].shift(6) == False)  # 6 velas atrás
         )   
     
-    #def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
+    # def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
     #    return df["downtrend_start"]

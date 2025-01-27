@@ -10,6 +10,12 @@ class Trend(Signal):
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:
+        required_columns = ["EMA_200_acceleration", "EMA_50_acceleration", "EMA_26_acceleration", "EMA_12_acceleration", "EMA_9_acceleration"]
+    
+        # Verificar columnas requeridas
+        for col in required_columns:
+            if col not in df.columns:
+                raise KeyError(f"La columna requerida '{col}' no está presente en el DataFrame. Asegúrate de que los indicadores se generen correctamente.")
 
         # Initialize the 'downtrend_signals' column with zeros
         df['trend'] = 0

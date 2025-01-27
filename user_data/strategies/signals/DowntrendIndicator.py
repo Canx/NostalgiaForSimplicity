@@ -1,29 +1,15 @@
 from signals.Signal import Signal
 from pandas import DataFrame
 import pandas_ta as ta
+import numpy as np
 
 
 class DowntrendIndicator(Signal):
-    def __init__(self, priority: int = 1):
-        super().__init__(priority, enabled=True)
+    def __init__(self, priority: int = 10):
+        super().__init__(priority, enabled=False)
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:
-        # slope (1st derivative)
-        df['EMA_5_slope'] = df['EMA_5'].diff() / df["EMA_5"].shift()
-        df['EMA_9_slope'] = df['EMA_9'].diff() / df["EMA_9"].shift()
-        df['EMA_12_slope'] = df['EMA_12'].diff() / df["EMA_12"].shift()
-        df['EMA_26_slope'] = df['EMA_26'].diff() / df["EMA_26"].shift()
-        df['EMA_50_slope'] = df['EMA_50'].diff() / df["EMA_50"].shift()
-        df['EMA_200_slope'] = df['EMA_200'].diff() / df["EMA_200"].shift()
-
-        # acceleration (2nd derivative)
-        df['EMA_5_acceleration'] = df['EMA_5_slope'].diff()
-        df['EMA_9_acceleration'] = df['EMA_9_slope'].diff()
-        df['EMA_12_acceleration'] = df['EMA_12_slope'].diff()
-        df['EMA_26_acceleration'] = df['EMA_26_slope'].diff()
-        df['EMA_50_acceleration'] = df['EMA_50_slope'].diff()
-        df['EMA_200_acceleration'] = df['EMA_200_slope'].diff()
 
         # Volume average
         df['OBV'] = ta.obv(df['close'], df['volume'])

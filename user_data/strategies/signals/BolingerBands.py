@@ -4,9 +4,9 @@ from pandas import DataFrame
 import pandas_ta as ta
 
 
-class BolingerBandsIndicator(Signal):
-    def __init__(self, priority: int = 5):
-        super().__init__(priority, enabled=False)
+class BollingerBands(Signal):
+    def __init__(self, priority: int = 1):
+        super().__init__(priority, enabled=True)
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:

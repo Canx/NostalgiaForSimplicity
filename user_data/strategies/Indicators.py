@@ -74,10 +74,6 @@ def calculate_mfi(df: DataFrame, length: int) -> DataFrame:
     df[f"MFI_{length}"] = ta.mfi(df["high"], df["low"], df["close"], df["volume"], length=length)
     return df
 
-def calculate_ema(df: DataFrame, length: int) -> DataFrame:
-
-    df[f"EMA_{length}"] = ta.ema(df["close"], length=length)
-    return df
 
 def calculate_rolling_max(df: DataFrame, length: int, column: str = "close") -> DataFrame:
 
@@ -99,13 +95,6 @@ def add_indicators(df: DataFrame) -> DataFrame:
     df = calculate_sma(df, length=16)
     df = calculate_rsi(df, length=14)
     df = calculate_mfi(df, length=14)
-    df = calculate_ema(df, length=5)
-    df = calculate_ema(df, length=9)
-    df = calculate_ema(df, length=12)
-    df = calculate_ema(df, length=20)
-    df = calculate_ema(df, length=26)
-    df = calculate_ema(df, length=50)
-    df = calculate_ema(df, length=200)
 
     df = calculate_willr(df, length=14)
     df = calculate_rolling_max(df, length=48, column="close")

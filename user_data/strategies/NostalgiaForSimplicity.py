@@ -139,6 +139,7 @@ class NostalgiaForSimplicity(IStrategy):
                 signal.config_strategy(self)  # Llamar al método de cada señal
 
 
+
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
         df = ind.add_indicators(df)  # Indicadores globales (quitar cuando no sea necesario)
         

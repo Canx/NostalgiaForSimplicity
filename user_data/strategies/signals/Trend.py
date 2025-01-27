@@ -1,0 +1,39 @@
+from signals.Signal import Signal
+from pandas import DataFrame
+import pandas_ta as ta
+import numpy as np
+
+
+class Trend(Signal):
+    def __init__(self, priority: int = 10):
+        super().__init__(priority, enabled=True)
+    
+
+    def populate_indicators(self, df: DataFrame) -> DataFrame:
+
+        # Initialize the 'downtrend_signals' column with zeros
+        df['trend'] = 0
+
+        # Increase downtrend signals based on conditions (ordered from more to less reactive)
+        df['trend'] += (df["EMA_200_acceleration"])
+        df['trend'] += (df["EMA_50_acceleration"])
+        df['trend'] += (df["EMA_26_acceleration"])
+        df['trend'] += (df["EMA_12_acceleration"])
+        df['trend'] += (df["EMA_9_acceleration"]) 
+
+        alpha = 0.1  # Coeficiente de suavizado (más pequeño = más suavizado)
+        df['trend_smoothed'] = df['trend'].ewm(alpha=alpha, adjust=False).mean()
+
+        df['uptrend_start'] = (
+            (df["trend_smoothed"] > 0)
+             & (df["trend_smoothed"].shift(1) < 0)
+        )
+
+        df['downtrend_start'] = (
+
+            (df["trend_smoothed"] < 0)
+             & (df["trend_smoothed"].shift(1) > 0)
+        )
+
+
+        return df

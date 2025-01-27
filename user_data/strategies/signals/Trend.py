@@ -17,8 +17,8 @@ class Trend(Signal):
         # Increase downtrend signals based on conditions (ordered from more to less reactive)
         df['trend'] += (df["EMA_200_acceleration"])
         df['trend'] += (df["EMA_50_acceleration"])
-        df['trend'] += (df["EMA_26_acceleration"])
-        df['trend'] += (df["EMA_12_acceleration"])
+        df['trend'] += (df["EMA_26_acceleration"]) * 3
+        df['trend'] += (df["EMA_12_acceleration"]) * 2
         df['trend'] += (df["EMA_9_acceleration"]) 
 
         alpha = 0.1  # Coeficiente de suavizado (más pequeño = más suavizado)

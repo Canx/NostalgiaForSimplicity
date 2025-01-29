@@ -11,8 +11,7 @@ class ReverseMean(Signal):
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
         return (
             # Nos aseguramos de que estemos en mercado lateral.
-            df["lateral"]
-            & (df["uptrend_start"])
+            (df["uptrend_start"])
         )   
     
     # def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

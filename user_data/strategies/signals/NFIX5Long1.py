@@ -3,23 +3,21 @@ from pandas import DataFrame
 import pandas as pd
 
 
-# Long 4 entry signal
-class NFIX5Long4(Signal):
+# Long 1 entry signal
+class NFIX5Long1(Signal):
     def __init__(self, priority: int = 1):
         super().__init__(priority, enabled=True)
 
-    def get_plugin_tag(self) -> str:
-        return "nl_4"
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
         """
         Generate entry signal based on conditions.
         """
         condition = (
-            (df["AROONU_14"] < 25.0) &
-            (df["AROONU_14_15m"] < 25.0) &
-            (df["close"] < (df["EMA_9"] * 0.942)) &
-            (df["close"] < (df["EMA_20"] * 0.960))
+            (df["EMA_26"] > df["EMA_12"]) &
+            ((df["EMA_26"] - df["EMA_12"]) > (df["open"] * 0.030)) &
+            ((df["EMA_26"].shift() - df["EMA_12"].shift()) > (df["open"] / 100.0)) &
+            (df["close"] < (df["BBL_20_2.0"] * 0.999))
         )
 
         return condition

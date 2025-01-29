@@ -194,7 +194,10 @@ class NostalgiaForSimplicity(IStrategy):
     @informative('15m')
     def populate_indicators_15m(self, df: DataFrame, metadata: dict) -> DataFrame:
         #df = ind.calculate_aroon(df, length=14)
-
+        for indicator in self.indicators:
+            if indicator.enabled:
+                self.log.debug(f"Populating indicators 15m for {indicator.get_signal_tag()}.")
+                df = indicator.populate_indicators_15m(df)  # Llamar al método de cada señal
         return df
 
 

@@ -3,17 +3,6 @@ import pandas as pd
 from pandas import DataFrame
 import numpy as np
 
-def calculate_aroon(df: DataFrame, length: int) -> DataFrame:
-
-    aroon = ta.aroon(df["high"], df["low"], length=length)
-    if isinstance(aroon, pd.DataFrame):
-        df[f"AROONU_{length}"] = aroon[f"AROONU_{length}"]
-        df[f"AROOND_{length}"] = aroon[f"AROOND_{length}"]
-    else:
-        df[f"AROONU_{length}"] = np.nan
-        df[f"AROOND_{length}"] = np.nan
-
-    return df
 
 def calculate_stochrsi(df: DataFrame) -> DataFrame:
 
@@ -98,8 +87,6 @@ def add_indicators(df: DataFrame) -> DataFrame:
 
     df = calculate_willr(df, length=14)
     df = calculate_rolling_max(df, length=48, column="close")
-
-    df = calculate_aroon(df, length=14)
 
     df = calculate_stochrsi(df)
 

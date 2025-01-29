@@ -12,7 +12,7 @@ class ReverseMean(Signal):
         return (
             # Nos aseguramos de que estemos en mercado lateral.
             (df["uptrend_start"])
-            & (df["close"] <= df["close"].shift(1).rolling(window=5, min_periods=1).max())
+            & (df["close"] <= df["close"].shift(1).rolling(window=4, min_periods=1).max())
         )   
     
     # def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

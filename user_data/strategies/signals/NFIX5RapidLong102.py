@@ -12,10 +12,9 @@ class NFIX5RapidLong102(Signal):
         Generate entry signal based on conditions.
         """
         condition = (
-            (df["WILLR_14"] < -95.0)
-            & (df["STOCHRSIk_14_14_3_3"] < 10.0)
-            & (df["close"] < (df["BBL_20_2.0"] * 0.999))
-            & (df["close"] < (df["EMA_20"] * 0.960))
+            (df["NFIX5_102"].rolling(window=5, min_periods=1).max().astype(bool))
+            & (df["close"] > df["open"])
+            & (df["close"].shift() < df["open"].shift())
         )
 
         return condition

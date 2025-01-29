@@ -6,7 +6,7 @@ import pandas as pd
 # Long 2 entry signal
 class NFIX5Long2(Signal):
     def __init__(self, priority: int = 1):
-        super().__init__(priority, enabled=True)
+        super().__init__(priority, enabled=False)
 
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

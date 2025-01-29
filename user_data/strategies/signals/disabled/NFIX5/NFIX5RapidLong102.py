@@ -1,4 +1,4 @@
-from signals.Signal import Signal
+from Signal import Signal
 from pandas import DataFrame
 import pandas as pd
 
@@ -6,9 +6,6 @@ import pandas as pd
 class NFIX5RapidLong102(Signal):
     def __init__(self, priority: int = 1):
         super().__init__(priority, enabled=True)
-
-    def get_plugin_tag(self) -> str:
-        return "rl_101"
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
         """

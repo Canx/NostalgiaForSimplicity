@@ -2,7 +2,7 @@ import os
 import datetime
 import importlib.util
 import logging
-from signals.Signal import Signal
+from Signal import Signal
 from pandas import DataFrame
 import pandas as pd
 from freqtrade.strategy import IStrategy, informative

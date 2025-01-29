@@ -1,4 +1,4 @@
-from signals.Signal import Signal
+from Signal import Signal
 from pandas import DataFrame
 import pandas_ta as ta
 import numpy as np

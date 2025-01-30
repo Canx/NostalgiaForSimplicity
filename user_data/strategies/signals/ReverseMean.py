@@ -15,5 +15,5 @@ class ReverseMean(Signal):
             & (df["close"] <= df["close"].shift(1).rolling(window=4, min_periods=1).max())
         )   
     
-    # def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
-    #    return df["downtrend_start"]
+    def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
+        return df["price_crosses_bbu"]

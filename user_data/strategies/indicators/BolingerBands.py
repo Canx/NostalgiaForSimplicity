@@ -19,4 +19,9 @@ class BollingerBands(Signal):
         df["BBB_20_2.0"] = bbands_20_2["BBB_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
         df["BBP_20_2.0"] = bbands_20_2["BBP_20_2.0"] if isinstance(bbands_20_2, pd.DataFrame) else np.nan
 
+        df["price_crosses_bbu"] = (
+            (df['close'] >= df['BBU_20_2.0'])
+             & (df['close'].shift(1) < df['BBU_20_2.0'])
+            )
+
         return df

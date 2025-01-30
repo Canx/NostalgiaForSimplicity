@@ -6,6 +6,8 @@ from Signal import Signal
 from pandas import DataFrame
 import pandas as pd
 from freqtrade.strategy import IStrategy, informative
+from freqtrade.persistence import Trade
+from datetime import datetime
 import Indicators as ind
 
 
@@ -309,3 +311,30 @@ class NostalgiaForSimplicity(IStrategy):
                 self.log.info(f"Signal {signal.get_signal_tag()} generated {signal_count} exit signal(s) for pair {pair}.")
 
         return dataframe
+
+
+    def custom_exit(self, pair: str, trade: Trade, current_time: datetime, current_rate: float,
+                    current_profit: float, **kwargs):
+
+        params = {
+            "pair": pair,
+            "trade": trade,
+            "current_time": current_time,
+            "current_rate": current_rate,
+            "current_profit": current_profit,
+            **kwargs,
+        }
+
+        exit_signal = False  # Valor por defecto si ninguna señal se activa
+
+        for signal in self.signals:
+            if signal.enabled:
+                signal_triggered = signal.custom_exit(**params)  # Llamada al método de la señal
+
+                if isinstance(signal_triggered, bool) and signal_triggered:
+                    return True  # Prioridad: si alguna señal devuelve True, se retorna inmediatamente
+                elif isinstance(signal_triggered, str) and signal_triggered.strip():
+                    exit_signal = signal_triggered  # Guardar la cadena no vacía, pero seguir buscando True
+
+        return exit_signal  # Devuelve la última cadena no vacía encontrada o False si no hubo ninguna
+

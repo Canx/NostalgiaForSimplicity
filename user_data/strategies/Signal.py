@@ -1,4 +1,6 @@
 from freqtrade.strategy import IStrategy
+from freqtrade.persistence import Trade
+from datetime import datetime
 from pandas import DataFrame
 import pandas as pd
 import logging
@@ -74,4 +76,13 @@ class Signal:
         """
         self.log.debug(f"Plugin {self.get_signal_tag()} does not implement exit_signal.")
         return pd.Series(False, index=dataframe.index)
+    
+    # TODO: Implement callbacks
+    def custom_exit(self, pair: str, trade: Trade, current_time: datetime, current_rate: float,
+                    current_profit: float, **kwargs):
+        """
+        Called for open trade every throttling iteration (roughly every 5 seconds).
+        """
+        self.log.debug(f"Plugin {self.get_signal_tag()} does not implement custom_exit..")
+        return False
 

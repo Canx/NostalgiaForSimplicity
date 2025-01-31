@@ -22,11 +22,12 @@ class ReverseMean(Signal):
             & (df["significant_drop"])
         )
     
-    def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
-        return (
-            (df['price_over_bbu'].shift(1))
-            & (df['close'] < df['BBU_20_2.0'])
-            & (df['RSI_3'].shift(1) > 90)
+    # TODO: Improve exits, to early sometimes
+    # def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
+    #     return (
+    #         (df['price_over_bbu'].shift(1))
+    #         & (df['close'] < df['BBU_20_2.0'])
+    #         & (df['RSI_3'].shift(1) > 90)
 
-        )
+    #     )
             

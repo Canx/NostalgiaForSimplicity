@@ -18,6 +18,6 @@ class MACD(Signal):
 
         df['macd_crossover'] = (df['MACD_12_26_9'] > df['MACDs_12_26_9']) & (df['MACD_12_26_9'].shift(1) <= df['MACDs_12_26_9'].shift(1))
         df['macd_positive'] = df['MACDh_12_26_9'] > 0
-        df['buy_macd'] = df['macd_crossover'] & df['macd_positive']
+        df['macd_buy'] = df['macd_crossover'] & df['macd_positive']
 
         return df

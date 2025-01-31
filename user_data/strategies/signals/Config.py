@@ -35,17 +35,16 @@ class Config(Signal):
             'stoploss_on_exchange': False
         }
 
-        # Dar 8 horas de margen para que el trailing stoploss crezca.
         strat.minimal_roi = {
             "0": 0.15,
             "5": 0.10,
-            "10": 0.09,
-            "15": 0.08,
-            "20": 0.07,
-            "30": 0.06,
-            "60": 0.05,
-            "120": 0.04,
-            "180": 0.03
+            "10": 0.08,
+            "15": 0.07,
+            "20": 0.06,
+            "30": 0.05,
+            "60": 0.04,
+            "120": 0.03,
+            "180": 0.02
         }
 
         strat.stoploss = -0.0189

@@ -77,7 +77,7 @@ class Signal:
         self.log.debug(f"Plugin {self.get_signal_tag()} does not implement exit_signal.")
         return pd.Series(False, index=dataframe.index)
     
-    # TODO: Implement callbacks
+
     def custom_exit(self, pair: str, trade: Trade, current_time: datetime, current_rate: float,
                     current_profit: float, **kwargs):
         """
@@ -85,4 +85,10 @@ class Signal:
         """
         self.log.debug(f"Plugin {self.get_signal_tag()} does not implement custom_exit..")
         return False
+    
+
+    def custom_stoploss(self, pair: str, trade: Trade, current_time: datetime, current_rate: float, 
+                        current_profit: float, **kwargs) -> float:
+        self.log.debug(f"Plugin {self.get_signal_tag()} does not implement custom_stoploss..")
+        return None
 

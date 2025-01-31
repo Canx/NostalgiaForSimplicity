@@ -337,4 +337,30 @@ class NostalgiaForSimplicity(IStrategy):
                     exit_signal = signal_triggered  # Guardar la cadena no vacía, pero seguir buscando True
 
         return exit_signal  # Devuelve la última cadena no vacía encontrada o False si no hubo ninguna
+    
+    
+    def custom_stoploss(self, pair: str, trade: Trade, current_time: datetime, current_rate: float, 
+                        current_profit: float, **kwargs) -> float:
+
+        params = {
+            "pair": pair,
+            "trade": trade,
+            "current_time": current_time,
+            "current_rate": current_rate,
+            "current_profit": current_profit,
+            **kwargs,
+        }
+
+        stoploss_value = None  # Por defecto, usa el stop-loss de la estrategia
+
+        for signal in self.signals:
+            if signal.enabled:
+                signal_stoploss = signal.custom_stoploss(**params)  # Llamada al método de la señal
+
+                if isinstance(signal_stoploss, float):  # Si la señal devuelve un stop-loss válido
+                    if stoploss_value is None or signal_stoploss > stoploss_value:
+                        stoploss_value = signal_stoploss  # Usa el stop-loss menos restrictivo (más alto)
+
+        return stoploss_value  # Devuelve el stop-loss más alto encontrado o None si no hay cambios
+
 

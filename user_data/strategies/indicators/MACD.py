@@ -16,4 +16,8 @@ class MACD(Signal):
         
         df.ta.macd(close='close', fast=12, slow=26, signal=9, append=True)
 
+        df['macd_crossover'] = (df['MACD_12_26_9'] > df['MACDs_12_26_9']) & (df['MACD_12_26_9'].shift(1) <= df['MACDs_12_26_9'].shift(1))
+        df['macd_positive'] = df['MACDh_12_26_9'] > 0
+        df['buy_macd'] = df['macd_crossover'] & df['macd_positive']
+
         return df

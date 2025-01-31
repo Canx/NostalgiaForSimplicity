@@ -26,6 +26,7 @@ class ReverseMean(Signal):
         return (
             (df['price_over_bbu'].shift(1))
             & (df['close'] < df['BBU_20_2.0'])
-            & (df['close'] < df['open'])
+            & (df['RSI_3'].shift(1) > 90)
+
         )
             

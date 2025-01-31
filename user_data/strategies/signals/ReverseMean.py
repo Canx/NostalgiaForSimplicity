@@ -9,10 +9,17 @@ class ReverseMean(Signal):
     
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
-        return (
-            (df["bb_buy"] == False) 
-            & (df["bb_buy"].rolling(window=2, min_periods=1).max() == True)
+        # At least 1 bb_buy signal in the last 5 candles
+        # -1 candle RSI very low
+        # 0 candle RSI increasing
+        # green candle
+        # significant drop in price in last 20 candles (>3%)
+        return ( 
+            (df["bb_buy"].rolling(window=5, min_periods=1).max() == True)
+            & (df["RSI_3"].shift(1) < 15)
+            & (df["RSI_3"] > 20)
             & (df["close"] > df["open"]) 
+            & (df["significant_drop"])
         )
     
     def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

@@ -4,9 +4,9 @@ The objective of this project is to create a simple and flexible bot that can be
 
 Currently the bot has these features:
 
-- Load signals from "signals" directory.
-- Live reloading of signals when files are modified (no need to restart freqtrade).
-- Priority based signals.
+- Load signals and indicators from files in their directories.
+- Live reloading of signals/indicators when files are modified (no need to restart freqtrade).
+- Priority based signals/indicators.
 
 
 ## Disclaimer 

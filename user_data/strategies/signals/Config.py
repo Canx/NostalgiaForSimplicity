@@ -44,10 +44,13 @@ class Config(Signal):
             "30": 0.05,
             "60": 0.04,
             "120": 0.03,
-            "180": 0.02
+            "180": 0.02,
+            "210": 0.01,
+            "240": 0.005
         }
 
-        strat.stoploss = -0.0189
+        #strat.stoploss = -0.0189
+        strat.stoploss = -0.05
 
         # Trailing stoploss
         strat.trailing_stop = True

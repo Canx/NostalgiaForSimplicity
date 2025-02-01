@@ -43,3 +43,8 @@ class EMA(Signal):
         df['EMA_200_acceleration'] = df['EMA_200_slope'].diff()
 
         return df
+    
+    def populate_indicators_1h(self, df: DataFrame) -> DataFrame:
+        df["EMA_55"] = ta.ema(df["close"], length=55)
+
+        return df

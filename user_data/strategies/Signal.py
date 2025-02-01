@@ -51,29 +51,23 @@ class Signal:
         return self.__class__.__name__
 
     def populate_indicators(self, dataframe):
-        """
-        Method to populate indicators for this specific signal.
-        """
-        return dataframe  # Devuelve el DataFrame sin modificar como predeterminado.
+        return dataframe
 
     def populate_indicators_15m(self, dataframe):
-        """
-        Method to populate indicators for this specific signal.
-        """
-        return dataframe  # Devuelve el DataFrame sin modificar como predeterminado.
+        return dataframe
+    
+    def populate_indicators_1h(self, dataframe):
+        return dataframe
+    
+    def populate_indicators_4h(self, dataframe):
+        return dataframe
     
 
     def entry_signal(self, dataframe: DataFrame, metadata: dict) -> pd.Series:
-        """
-        Generate entry signals based on plugin-specific logic. Default returns False for all rows.
-        """
         self.log.debug(f"Plugin {self.get_signal_tag()} does not implement entry_signal.")
         return pd.Series(False, index=dataframe.index)
 
     def exit_signal(self, dataframe: DataFrame, metadata: dict) -> pd.Series:
-        """
-        Generate exit signals based on plugin-specific logic. Default returns False for all rows.
-        """
         self.log.debug(f"Plugin {self.get_signal_tag()} does not implement exit_signal.")
         return pd.Series(False, index=dataframe.index)
     

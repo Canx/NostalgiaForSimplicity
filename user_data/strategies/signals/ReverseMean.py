@@ -15,7 +15,7 @@ class ReverseMean(Signal):
         # significant drop in price in last 20 candles (>3%)
         # At least 1 bb_buy signal in the last 5 candles
         return (
-            ((df["is_trending"]) | (df["is_range"]))
+            ((df["is_trend"]) | (df["is_range"]))
             & (df["RSI_3"].shift(1) < 15)
             & (df["RSI_3"] > 20)
             & (df["close"] > df["open"]) 

@@ -28,8 +28,10 @@ class Config(Signal):
         ]
 
         strat.order_types = {
-            'buy': 'limit',
+            'buy': 'market',
             'sell': 'limit',
+            'force_entry': 'market',
+            'force_exit': 'market',
             'trailing_stop_loss': 'limit',
             'stoploss': 'limit',
             'stoploss_on_exchange': False

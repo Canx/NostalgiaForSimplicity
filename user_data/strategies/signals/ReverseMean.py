@@ -9,14 +9,13 @@ class ReverseMean(Signal):
     
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
-        # price over EMA_55 1h
         # -1 candle RSI very low
         # 0 candle RSI increasing
         # green candle
         # significant drop in price in last 20 candles (>3%)
         # At least 1 bb_buy signal in the last 5 candles
         return (
-            (df["close"] > df["EMA_55_1h"])
+            (df["trending"]) # TODO: Allow also range market
             & (df["RSI_3"].shift(1) < 15)
             & (df["RSI_3"] > 20)
             & (df["close"] > df["open"]) 

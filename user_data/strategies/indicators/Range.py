@@ -6,7 +6,7 @@ import numpy as np
 
 class Range(Signal):
     def __init__(self, priority: int = 10):
-        super().__init__(priority, enabled=True)
+        super().__init__(priority, enabled=False)
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:

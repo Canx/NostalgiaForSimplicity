@@ -221,9 +221,7 @@ class NostalgiaForSimplicity(IStrategy):
                 signal.config_strategy(self)  # Llamar al método de cada señal
 
 
-    def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
-        df = ind.add_indicators(df)  # Indicadores globales (quitar cuando no sea necesario)
-        
+    def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:       
         for indicator in self.indicators:
             if indicator.enabled:
                 self.log.debug(f"Populating indicators for {indicator.get_signal_tag()}.")

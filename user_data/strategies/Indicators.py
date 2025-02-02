@@ -4,21 +4,6 @@ from pandas import DataFrame
 import numpy as np
 
 
-def calculate_stochrsi(df: DataFrame) -> DataFrame:
-
-    stochrsi = ta.stochrsi(df["close"])
-    if isinstance(stochrsi, DataFrame):
-        df["STOCHRSIk_14_14_3_3"] = stochrsi["STOCHRSIk_14_14_3_3"]
-        df["STOCHRSId_14_14_3_3"] = stochrsi["STOCHRSId_14_14_3_3"]
-    else:
-        df["STOCHRSIk_14_14_3_3"] = np.nan
-        df["STOCHRSId_14_14_3_3"] = np.nan
-
-    # Calculate slopes
-    df["STOCHRSIk_14_14_3_3_slope"] = df["STOCHRSIk_14_14_3_3"].diff() / df["STOCHRSIk_14_14_3_3"].shift()
-
-    return df
-
 
 def detect_divergences(dataframe: DataFrame) -> DataFrame:
     # Initialize divergence columns
@@ -48,11 +33,6 @@ def calculate_willr(df: DataFrame, length: int) -> DataFrame:
     df[f"WILLR_{length}"] = ta.willr(df["high"], df["low"], df["close"], length=length)
     return df
 
-def calculate_rsi(df: DataFrame, length: int) -> DataFrame:
-
-    df[f"RSI_{length}"] = ta.rsi(df["close"], length=length)
-    return df
-
 def calculate_sma(df: DataFrame, length: int) -> DataFrame:
 
     df[f"SMA_{length}"] = ta.sma(df["close"], length=length)
@@ -78,17 +58,10 @@ def calculate_adx(df: DataFrame, length: int = 14) -> DataFrame:
 
 def add_indicators(df: DataFrame) -> DataFrame:
 
-    df = calculate_rsi(df, length=3)
-    df = calculate_rsi(df, length=4)
-    df = calculate_rsi(df, length=20)
-    df = calculate_sma(df, length=16)
-    df = calculate_rsi(df, length=14)
-    df = calculate_mfi(df, length=14)
+    #df = calculate_mfi(df, length=14)
 
-    df = calculate_willr(df, length=14)
-    df = calculate_rolling_max(df, length=48, column="close")
-
-    df = calculate_stochrsi(df)
+    #df = calculate_willr(df, length=14)
+    #df = calculate_rolling_max(df, length=48, column="close")
 
 
     return df

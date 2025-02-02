@@ -14,6 +14,7 @@ class SMA(Signal):
         df["SMA_5"] = ta.sma(df["close"], length=5)
         df["SMA_9"] = ta.sma(df["close"], length=9)
         df["SMA_12"] = ta.sma(df["close"], length=12)
+        df["SMA_16"] = ta.sma(df["close"], length=16)
         df["SMA_26"] = ta.sma(df["close"], length=26)
         df["SMA_50"] = ta.sma(df["close"], length=50)
         df["SMA_200"] = ta.sma(df["close"], length=200)

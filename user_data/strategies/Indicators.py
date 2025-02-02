@@ -49,12 +49,6 @@ def calculate_rolling_max(df: DataFrame, length: int, column: str = "close") -> 
     df[f"{column}_max_{length}"] = df[column].rolling(length).max()
     return df
 
-def calculate_adx(df: DataFrame, length: int = 14) -> DataFrame:
-
-    adx = ta.adx(df["high"], df["low"], df["close"], length=length)
-    df[f"ADX_{length}"] = adx[f"ADX_{length}"]
-    return df
-
 
 def add_indicators(df: DataFrame) -> DataFrame:
 

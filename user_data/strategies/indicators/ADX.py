@@ -8,9 +8,14 @@ class ADX(Signal):
     def __init__(self, priority: int = 1):
         super().__init__(priority, enabled=True)
     
+    def _calculate_adx(self, df: DataFrame, length: int = 14) -> DataFrame:
+
+        adx = ta.adx(df["high"], df["low"], df["close"], length=length)
+        df[f"ADX_{length}"] = adx[f"ADX_{length}"]
+        return df
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:
-        
-        df['ADX_14'] = ta.adx(high=df['high'], low=df['low'], close=df['close'], length=14)['ADX_14']
+
+        df = self._calculate_adx(df, 14)
 
         return df

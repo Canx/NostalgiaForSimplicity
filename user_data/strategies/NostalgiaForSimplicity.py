@@ -1,4 +1,7 @@
+import psutil
 import os
+import gc
+import objgraph
 import datetime
 import importlib.util
 import logging
@@ -9,6 +12,7 @@ from freqtrade.strategy import IStrategy, informative
 from freqtrade.persistence import Trade
 from datetime import datetime
 import Indicators as ind
+
 
 
 class NostalgiaForSimplicity(IStrategy):
@@ -62,7 +66,42 @@ class NostalgiaForSimplicity(IStrategy):
             self._reload_component("signals", Signal)
             self._refresh_signals()
 
+        self.log_memory_usage() 
+
             
+    def log_memory_usage(self):
+        process = psutil.Process(os.getpid())
+        mem_info = process.memory_info()
+        self.log.info(f"Used memory: {mem_info.rss / 1024 ** 2:.2f} MB")
+        #self.debug_memory_leak()
+        #self.check_dataframe_leaks()
+        #self.trace_dataframe_references()
+        gc.collect()  # Forzar recolección de basura
+
+    def debug_memory_leak(self):
+        self.log.info("🔍 Objects in memory:")
+        objgraph.show_growth(limit=10)  # Muestra los 10 objetos que más han crecido
+
+        # Si sospechamos que hay demasiados objetos del mismo tipo:
+        objgraph.show_most_common_types(limit=10)
+
+    def check_dataframe_leaks(self):
+        dataframes = [obj for obj in gc.get_objects() if isinstance(obj, pd.DataFrame)]
+        print(f"⚠️ Hay {len(dataframes)} DataFrames en memoria")
+
+        for i, df in enumerate(dataframes[:5]):  # Solo mostramos los primeros 5
+            self.log.info(f"📊 DataFrame {i}: {df.shape}, Memoria: {df.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
+   
+
+    def trace_dataframe_references(self):
+        dataframes = [obj for obj in gc.get_objects() if isinstance(obj, pd.DataFrame)]
+        
+        if not dataframes:
+            self.log.info("✅ No hay DataFrames retenidos en memoria.")
+            return
+
+        self.log.info("🔍 Mostrando referencias a un DataFrame sospechoso...")
+        objgraph.show_backrefs(dataframes[-1], max_depth=3, filename="dataframe_refs.png")
 
     def _check_for_file_changes(self) -> dict:
         """
@@ -182,7 +221,6 @@ class NostalgiaForSimplicity(IStrategy):
                 signal.config_strategy(self)  # Llamar al método de cada señal
 
 
-
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:
         df = ind.add_indicators(df)  # Indicadores globales (quitar cuando no sea necesario)
         
@@ -190,6 +228,7 @@ class NostalgiaForSimplicity(IStrategy):
             if indicator.enabled:
                 self.log.debug(f"Populating indicators for {indicator.get_signal_tag()}.")
                 df = indicator.populate_indicators(df)  # Llamar al método de cada señal
+        
         return df
     
 

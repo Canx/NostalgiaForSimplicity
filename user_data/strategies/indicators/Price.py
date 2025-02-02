@@ -16,8 +16,8 @@ class Price(Signal):
 
         df["avg_range_pct"] = df["range_pct"].rolling(window=200).mean()
 
-        df['price_drop'] = (df['close'] - df['close'].shift(20)) / df['close'].shift(20)
-        df['significant_drop'] = df['price_drop'].shift(1) < -0.03
+        df['price_drop'] = (df['close'] - df['close'].shift(30)) / df['close'].shift(30)
+        df['significant_drop'] = df['price_drop'].shift(1) < -0.02
         df['significant_high'] = df['price_drop'].shift(1) > 0.02
 
 

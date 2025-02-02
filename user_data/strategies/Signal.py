@@ -81,7 +81,7 @@ class Signal:
         return False
     
 
-    def custom_stoploss(self, pair: str, trade: Trade, current_time: datetime, current_rate: float, 
+    def custom_stoploss(self, strategy: IStrategy, pair: str, trade: Trade, current_time: datetime, current_rate: float, 
                         current_profit: float, **kwargs) -> float:
         self.log.debug(f"Plugin {self.get_signal_tag()} does not implement custom_stoploss..")
         return None

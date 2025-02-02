@@ -29,7 +29,7 @@ class BollingerBands(Signal):
         df["bb_buy"] = (
             (df['low'] < df['BBL_20_2.0']) &
             (df['high'].shift(1) > df['BBL_20_2.0'])  # La vela anterior estaba dentro
-            & (df['RSI_3'] < 30)
+            & (df['RSI_3'] < 15)
             & (df["BB_WIDTH_20_2.0"] > 0.10)  # Confirmación de sobreventa
         )
 

@@ -10,6 +10,9 @@ class Exit_DynamicROI(Signal):
         """
         Define condiciones personalizadas de salida para cada trade.
         """
+        # No salir si no hay beneficios
+        if current_profit < 0:
+            return None
 
         dataframe, _ = strategy.dp.get_analyzed_dataframe(pair, strategy.timeframe)
 

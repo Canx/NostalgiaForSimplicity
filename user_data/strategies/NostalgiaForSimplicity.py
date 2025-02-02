@@ -221,7 +221,7 @@ class NostalgiaForSimplicity(IStrategy):
                 signal.config_strategy(self)  # Llamar al método de cada señal
 
 
-    def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:       
+    def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:   
         for indicator in self.indicators:
             if indicator.enabled:
                 self.log.debug(f"Populating indicators for {indicator.get_signal_tag()}.")
@@ -354,6 +354,7 @@ class NostalgiaForSimplicity(IStrategy):
 
         params = {
             "pair": pair,
+            "strategy": self,
             "trade": trade,
             "current_time": current_time,
             "current_rate": current_rate,
@@ -398,46 +399,3 @@ class NostalgiaForSimplicity(IStrategy):
                         stoploss_value = signal_stoploss  # Usa el stop-loss menos restrictivo (más alto)
 
         return stoploss_value  # Devuelve el stop-loss más alto encontrado o None si no hay cambios
-    
-
-    # TODO: Externalizar lógica en otro archivo
-    def min_roi_reached(self, trade, current_profit, current_time):
-        """
-        Ajusta el ROI mínimo dinámicamente según la tendencia del mercado.
-        """
-        pair = trade.pair
-        dataframe, _ = self.dp.get_analyzed_dataframe(pair, self.timeframe)
-
-        if dataframe is None or dataframe.empty:
-            return False
-
-        last_candle = dataframe.iloc[-1]  # Última vela disponible
-
-        # Evaluamos la tendencia del mercado
-        is_bullish = last_candle['close'] > last_candle['EMA_50'] > last_candle['EMA_200']
-        rsi_high = last_candle['RSI_14'] > 60
-        strong_trend = last_candle['ADX_14'] > 25  # ADX alto = fuerte tendencia
-
-        # Definir ROI dinámico según la tendencia
-        if is_bullish and rsi_high and strong_trend:
-            dynamic_roi = 0.08  # Tendencia fuerte, ROI alto
-        elif is_bullish:
-            dynamic_roi = 0.04  # Tendencia moderada
-        else:
-            dynamic_roi = 0.01  # Tendencia bajista, ROI bajo para salir rápido
-
-        # Duración del trade en minutos
-        trade_dur = int((current_time.timestamp() - trade.open_date_utc.timestamp()) // 60)
-
-        # Obtener el ROI basado en la configuración estándar de min_roi_reached_entry()
-        _, roi = self.min_roi_reached_entry(trade_dur)
-
-        # Aplicamos el ROI dinámico en lugar del estático si existe
-        if roi is None:
-            final_roi = dynamic_roi  # Si no hay minimal_roi, usamos solo el dinámico
-        else:
-            final_roi = min(dynamic_roi, roi)  # Tomamos el menor valor para salida rápida
-
-        return current_profit > final_roi  # Se vende cuando el profit supera el ROI mínimo
-
-

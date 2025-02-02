@@ -72,7 +72,7 @@ class Signal:
         return pd.Series(False, index=dataframe.index)
     
 
-    def custom_exit(self, pair: str, trade: Trade, current_time: datetime, current_rate: float,
+    def custom_exit(self, strategy: IStrategy, pair: str, trade: Trade, current_time: datetime, current_rate: float,
                     current_profit: float, **kwargs):
         """
         Called for open trade every throttling iteration (roughly every 5 seconds).

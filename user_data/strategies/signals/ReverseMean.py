@@ -18,10 +18,8 @@ class ReverseMean(Signal):
             (df["is_trend"])
             & (df["RSI_3"].shift(1) < 15)
             & (df["RSI_3"] > 20)
-
-            # Una no es suficiente...
-            & (df["close"] > df["open"]) 
-            & (df["close"].shift(1) > df["open"].shift(1)) 
+            & (df["close"] > df["open"])
+            & (df["close"].shift(1) > df["open"].shift(1))
             & (df["significant_drop"])
             & (df["bb_buy"].rolling(window=5, min_periods=1).max() == True)
         )

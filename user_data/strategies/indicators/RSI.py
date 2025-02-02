@@ -19,5 +19,7 @@ class RSI(Signal):
         df = self._calculate_rsi(df, length=4)
         df = self._calculate_rsi(df, length=20)
         df = self._calculate_rsi(df, length=14)
+        df = self._calculate_rsi(df, length=84)
+        df = self._calculate_rsi(df, length=112)
 
         return df

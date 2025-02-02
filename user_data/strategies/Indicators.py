@@ -28,10 +28,6 @@ def detect_divergences(dataframe: DataFrame) -> DataFrame:
 
     return dataframe
 
-def calculate_willr(df: DataFrame, length: int) -> DataFrame:
-
-    df[f"WILLR_{length}"] = ta.willr(df["high"], df["low"], df["close"], length=length)
-    return df
 
 def calculate_sma(df: DataFrame, length: int) -> DataFrame:
 
@@ -53,8 +49,6 @@ def calculate_rolling_max(df: DataFrame, length: int, column: str = "close") -> 
 def add_indicators(df: DataFrame) -> DataFrame:
 
     #df = calculate_mfi(df, length=14)
-
-    #df = calculate_willr(df, length=14)
     #df = calculate_rolling_max(df, length=48, column="close")
 
 

@@ -1,7 +1,6 @@
 from Signal import Signal
 import pandas as pd
 from pandas import DataFrame
-import pandas_ta as ta
 
 
 class Price(Signal):
@@ -11,6 +10,8 @@ class Price(Signal):
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:
         window = 200
+
+        df['pct_change'] = 100 / df['open'] * df['close'] - 100
 
         df["range_pct"] = ((df["high"] - df["low"]) / df["low"]) * 100
 

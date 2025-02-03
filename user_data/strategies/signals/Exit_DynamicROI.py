@@ -6,7 +6,7 @@ class Exit_DynamicROI(Signal):
     def __init__(self, priority: int = 100):
         super().__init__(priority, enabled=True)
 
-    def custom_exit(self, strategy: IStrategy, pair, trade, current_time, current_rate, current_profit, **kwargs):
+    def custom_exit(self, pair, trade, current_time, current_rate, current_profit, **kwargs):
         """
         Define condiciones personalizadas de salida para cada trade.
         """
@@ -14,7 +14,7 @@ class Exit_DynamicROI(Signal):
         if current_profit < 0:
             return None
 
-        dataframe, _ = strategy.dp.get_analyzed_dataframe(pair, strategy.timeframe)
+        dataframe, _ = self.strat.dp.get_analyzed_dataframe(pair, self.strat.timeframe)
 
         if dataframe is None or dataframe.empty:
             return None

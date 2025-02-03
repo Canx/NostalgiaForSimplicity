@@ -22,7 +22,7 @@ class Signal:
         self.log = logging.getLogger(__name__)
 
     def config_strategy(self, strat: IStrategy):
-        pass
+        self.strat = strat
     
     def get_priority(self) -> int:
         """
@@ -72,7 +72,7 @@ class Signal:
         return pd.Series(False, index=dataframe.index)
     
 
-    def custom_exit(self, strategy: IStrategy, pair: str, trade: Trade, current_time: datetime, current_rate: float,
+    def custom_exit(self, pair: str, trade: Trade, current_time: datetime, current_rate: float,
                     current_profit: float, **kwargs):
         """
         Called for open trade every throttling iteration (roughly every 5 seconds).
@@ -81,7 +81,7 @@ class Signal:
         return False
     
 
-    def custom_stoploss(self, strategy: IStrategy, pair: str, trade: Trade, current_time: datetime, current_rate: float, 
+    def custom_stoploss(self, pair: str, trade: Trade, current_time: datetime, current_rate: float, 
                         current_profit: float, **kwargs) -> float:
         self.log.debug(f"Plugin {self.get_signal_tag()} does not implement custom_stoploss..")
         return None

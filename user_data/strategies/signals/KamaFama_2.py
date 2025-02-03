@@ -1,6 +1,7 @@
 from Signal import Signal
 from pandas import DataFrame
 import pandas as pd
+import talib as ta
 
 
 class KamaFama_2(Signal):
@@ -20,4 +21,3 @@ class KamaFama_2(Signal):
             (df['RSI_84'] < 60) &
             (df['RSI_112'] < 60)
         )
-    

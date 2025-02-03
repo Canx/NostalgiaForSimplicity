@@ -16,20 +16,22 @@ class ReverseMean(Signal):
         # At least 1 bb_buy signal in the last 5 candles
         return (
             #(df["is_trend"]) &
-            (df["RSI_3"] > 30)
-            & (df["RSI_3"] < 60)
+            (df["RSI_3"] > 35)
+            & (df["RSI_3"] < 91)
             #& (df["close"] > df["open"])
             #& (df["close"].shift(1) > df["open"].shift(1))
             #& (df["significant_drop"])
-            & (df['bb_buy'].rolling(window=6, min_periods=1).sum() >= 2)
+            & (df['bb_buy'].rolling(window=5, min_periods=1).sum() >= 2)
         )
     
     # TODO: Improve exits, to early sometimes
     # def exit_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
     #     return (
-    #         (df['price_over_bbu'].shift(1))
-    #         & (df['close'] < df['BBU_20_2.0'])
-    #         & (df['RSI_3'].shift(1) > 90)
+    #         (df["close"] > df["EMA_50"])
+    #         & (df["close"].shift(1) < df["EMA_50"])
+    #         # (df['price_over_bbu'].shift(1))
+    #         # & (df['close'] < df['BBU_20_2.0'])
+    #         # & (df['RSI_3'].shift(1) > 90)
 
     #     )
             

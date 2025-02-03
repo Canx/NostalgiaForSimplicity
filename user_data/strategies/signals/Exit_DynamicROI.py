@@ -28,10 +28,10 @@ class Exit_DynamicROI(Signal):
 
         # Definir ROI dinámico y factor de decaimiento según la tendencia
         if is_bullish and rsi_high and strong_trend:
-            base_dynamic_roi = 0.07  # Tendencia fuerte, ROI alto
+            base_dynamic_roi = 0.04  # Tendencia fuerte, ROI alto
             decay_factor = 0.995  # Decrecimiento lento
         elif is_bullish:
-            base_dynamic_roi = 0.05  # Tendencia moderada
+            base_dynamic_roi = 0.03  # Tendencia moderada
             decay_factor = 0.99  # Decrecimiento estándar
         else:
             base_dynamic_roi = 0.02  # Tendencia bajista, ROI bajo

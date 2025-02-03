@@ -5,7 +5,7 @@ import pandas as pd
 
 class ReverseMean(Signal):
     def __init__(self, priority: int = 100):
-        super().__init__(priority, enabled=False)
+        super().__init__(priority, enabled=True)
     
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
@@ -16,11 +16,12 @@ class ReverseMean(Signal):
         # At least 1 bb_buy signal in the last 5 candles
         return (
             #(df["is_trend"]) &
-            (df["RSI_3"] > 20)
-            & (df["close"] > df["open"])
-            & (df["close"].shift(1) > df["open"].shift(1))
-            & (df["significant_drop"])
-            & (df["bb_buy"].rolling(window=5, min_periods=1).max() == True)
+            (df["RSI_3"] > 30)
+            & (df["RSI_3"] < 60)
+            #& (df["close"] > df["open"])
+            #& (df["close"].shift(1) > df["open"].shift(1))
+            #& (df["significant_drop"])
+            & (df['bb_buy'].rolling(window=6, min_periods=1).sum() >= 2)
         )
     
     # TODO: Improve exits, to early sometimes

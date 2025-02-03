@@ -17,9 +17,11 @@ class Price(Signal):
 
         df["avg_range_pct"] = df["range_pct"].rolling(window=200).mean()
 
-        df['price_drop'] = (df['close'] - df['close'].shift(30)) / df['close'].shift(30)
-        df['significant_drop'] = df['price_drop'].shift(1) < -0.02
-        df['significant_high'] = df['price_drop'].shift(1) > 0.02
+        df['retorno_20'] = df['close'].pct_change(periods=30).shift(1)
 
+        # Señal de caída significativa y alza significativa
+        umbral = 0.01
+        df['significant_drop'] = df['retorno_20'] < -umbral
+        df['significant_high'] = df['retorno_20'] > umbral
 
         return df

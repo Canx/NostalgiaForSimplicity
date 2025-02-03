@@ -4,7 +4,7 @@ import pandas as pd
 
 
 class KamaFama_2(Signal):
-    def __init__(self, priority: int = 100):
+    def __init__(self, priority: int = 105):
         super().__init__(priority, enabled=False)
     
 

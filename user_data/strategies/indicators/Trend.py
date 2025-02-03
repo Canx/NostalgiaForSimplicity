@@ -20,4 +20,11 @@ class Trend(Signal):
             
         )
 
+        # TODO: Create trend_level with this levels to use in dynamic ROI and custom_stoploss
+        # 2: strong uptrend
+        # 1: uptrend
+        # 0: sideways
+        # -1: downtrend
+        # 2: strong downtrend
+
         return df

@@ -19,7 +19,7 @@ class Config(Signal):
             "lookback_period_candles": 60,
             "trade_limit": 1,
             "stop_duration": 60,
-            "required_profit": -0.05
+            "required_profit": -0.01
         },
         {
             "method": "CooldownPeriod",

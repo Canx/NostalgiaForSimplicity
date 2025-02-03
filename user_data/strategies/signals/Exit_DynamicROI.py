@@ -34,7 +34,7 @@ class Exit_DynamicROI(Signal):
             base_dynamic_roi = 0.05  # Tendencia moderada
             decay_factor = 0.99  # Decrecimiento estándar
         else:
-            base_dynamic_roi = 0.03  # Tendencia bajista, ROI bajo
+            base_dynamic_roi = 0.02  # Tendencia bajista, ROI bajo
             decay_factor = 0.98  # Decrecimiento rápido para salir antes
 
         # Duración del trade en minutos

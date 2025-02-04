@@ -28,16 +28,16 @@ class Config(Signal):
         ]
 
         strat.order_types = {
-            'buy': 'market',
-            'sell': 'limit',
+            'entry': 'limit',
+            'exit': 'limit',
             'force_entry': 'market',
             'force_exit': 'market',
             'trailing_stop_loss': 'limit',
-            'stoploss': 'limit',
+            'stoploss': 'market',
             'stoploss_on_exchange': False
         }
 
-        strat.stoploss = -0.01  # Stop-loss en -1%
+        strat.stoploss = -0.02  # Stop-loss en -1%
     
         # Trailing stoploss
         strat.trailing_stop = True  

@@ -58,12 +58,14 @@ class NostalgiaForSimplicity(IStrategy):
         if files_modified.get("signals"):
             self.log.info("Cambios detectados en 'signals'. Recargando...")
             self._reload_component("signals", Signal)
+            self.config_strategy()
             self._refresh_signals()
 
         if files_modified.get("indicators"):
             self.log.info("Cambios detectados en 'indicators'. Recargando...")
             self._reload_component("indicators", Signal)
             self._reload_component("signals", Signal)
+            self.config_strategy()
             self._refresh_signals()
 
         self.log_memory_usage() 

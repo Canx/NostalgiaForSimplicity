@@ -22,4 +22,4 @@ class Exit_Stochastic(Signal):
         )
         df['fastk'] = fastk
 
-        return (df['fastk'] > 90)
+        return ((df['fastk'] > 90) & (df['RSI_14'] > 70))

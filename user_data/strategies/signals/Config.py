@@ -21,10 +21,10 @@ class Config(Signal):
             "stop_duration": 60,
             "required_profit": -0.01
         },
-        # {
-        #     "method": "CooldownPeriod",
-        #     "stop_duration_candles": 0
-        # }
+        {
+            "method": "CooldownPeriod",
+            "stop_duration_candles": 5
+        }
         ]
 
         strat.order_types = {

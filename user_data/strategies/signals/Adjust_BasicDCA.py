@@ -35,8 +35,6 @@ class Adjust_BasicDCA(Signal):
         """
         pair = trade.pair
 
-        self.log.info(f"Calculando DCA para {pair}")
-
         # Comprobación inicial de fondos: si no se tienen fondos al menos iguales a min_stake, no se realiza DCA.
         if min_stake is not None and max_stake < min_stake:
             self.log.info(
@@ -51,6 +49,8 @@ class Adjust_BasicDCA(Signal):
             self.log.warning(f"No se pudo obtener el DataFrame analizado para {pair}")
             return None
 
+        self.log.info(f"Calculando DCA para {pair}")
+        
         if len(dataframe) > 2:
             last_candle = dataframe.iloc[-1].squeeze()
             previous_candle = dataframe.iloc[-2].squeeze()

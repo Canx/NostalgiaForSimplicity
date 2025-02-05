@@ -401,3 +401,22 @@ class NostalgiaForSimplicity(IStrategy):
                         stoploss_value = signal_stoploss  # Usa el stop-loss menos restrictivo (más alto)
 
         return stoploss_value  # Devuelve el stop-loss más alto encontrado o None si no hay cambios
+    
+    
+    def adjust_trade_position(self, trade: Trade, current_time: datetime, current_rate: float, current_profit: float, **kwargs):
+        params = {
+            "trade": trade,
+            "current_time": current_time,
+            "current_rate": current_rate,
+            "current_profit": current_profit,
+            **kwargs,
+        }
+        adjusted_position = None
+        for signal in self.signals:
+            if signal.enabled:
+                result = signal.adjust_trade_position(**params)
+                if result is not None:
+                    adjusted_position = result
+                    self.log.info(f"Signal {signal.get_signal_tag()} ajustó la posición del trade a: {result}")
+                    break
+        return adjusted_position

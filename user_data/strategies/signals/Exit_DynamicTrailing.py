@@ -8,7 +8,7 @@ class Exit_DynamicTrailing(Signal):
     def __init__(self, priority: int = 100):
         super().__init__(priority, enabled=False)
 
-    def custom_stoploss(self, strategy: IStrategy, pair: str, trade, current_time: datetime, current_rate: float, 
+    def custom_stoploss(self, pair: str, trade, current_time: datetime, current_rate: float, 
                           current_profit: float, **kwargs) -> float:
         """
         Calcula un stoploss dinámico que comienza en -5% y se va reduciendo (endureciendo) con el tiempo hasta acercarse a 0,
@@ -28,7 +28,7 @@ class Exit_DynamicTrailing(Signal):
         trailing_stop_pct = 0.98      # Factor para el trailing stop (permite un retroceso del 2%)
 
         # Obtener el DataFrame analizado para el par en el timeframe de la estrategia
-        dataframe, _ = strategy.dp.get_analyzed_dataframe(pair, strategy.timeframe)
+        dataframe, _ = self.strat.dp.get_analyzed_dataframe(pair, self.strat.timeframe)
         if dataframe is None or dataframe.empty:
             return initial_stoploss  # Si no hay datos, se devuelve el stoploss inicial
 
@@ -56,7 +56,7 @@ class Exit_DynamicTrailing(Signal):
         # Esto significa que, a medida que pasa el tiempo y el stop basado en el tiempo se eleva, se forzará la salida si es más alto.
         final_stoploss = max(dynamic_stoploss, time_based_stoploss)
 
-        strategy.log.info(
+        self.log.info(
             f"[custom_stoploss] {pair} - Current rate: {current_rate:.4f}, Trailing stop price: {current_trailing_stop:.4f}, "
             f"Dynamic stoploss: {dynamic_stoploss:.4f}, Time-based stoploss: {time_based_stoploss:.4f}, "
             f"Bars since entry: {bars_since_entry:.1f}"

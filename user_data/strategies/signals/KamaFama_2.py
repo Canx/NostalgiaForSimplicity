@@ -6,7 +6,7 @@ import talib as ta
 
 class KamaFama_2(Signal):
     def __init__(self, priority: int = 105):
-        super().__init__(priority, enabled=False)
+        super().__init__(priority, enabled=True)
     
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

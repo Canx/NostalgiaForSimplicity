@@ -86,3 +86,10 @@ class Signal:
         self.log.debug(f"Plugin {self.get_signal_tag()} does not implement custom_stoploss..")
         return None
 
+    
+    def adjust_trade_position(self, trade, current_time, current_rate, current_profit, **kwargs):
+        """
+        Método opcional para ajustar la posición del trade.
+        La implementación por defecto no realiza ningún ajuste.
+        """
+        return None

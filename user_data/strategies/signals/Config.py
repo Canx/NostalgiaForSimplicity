@@ -37,7 +37,7 @@ class Config(Signal):
             'stoploss_on_exchange': False
         }
 
-        strat.stoploss = -0.02  # Stop-loss en -1%
+        strat.stoploss = -0.05  # Stop-loss en -1%
     
         # Trailing stoploss
         strat.trailing_stop = True  
@@ -46,6 +46,8 @@ class Config(Signal):
         strat.trailing_only_offset_is_reached = True  # Solo activa trailing si alcanza offset
         strat.use_custom_stoploss = True
 
+        # Adjust trade position
+        strat.position_adjustment_enable = True
         
         strat.timeframe = "5m"
         strat.startup_candle_count = 300

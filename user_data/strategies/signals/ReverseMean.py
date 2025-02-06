@@ -16,6 +16,7 @@ class ReverseMean(Signal):
         # At least 1 bb_buy signal in the last 5 candles
         return (
             #(df["is_trend"]) &
+            #(df['kama'] > df['fama'])
             (df["RSI_3"] > 35)
             & (df["RSI_3"] < 91)
             & (df["close"] > df["high"].shift(1))

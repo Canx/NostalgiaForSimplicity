@@ -87,9 +87,38 @@ class Signal:
         return None
 
     
-    def adjust_trade_position(self, trade, current_time, current_rate, current_profit, **kwargs):
+    def adjust_trade_position(
+        self,
+        trade: Trade,
+        current_time: datetime,
+        current_rate: float,
+        current_profit: float,
+        min_stake: float | None,
+        max_stake: float,
+        current_entry_rate: float,
+        current_exit_rate: float,
+        current_entry_profit: float,
+        current_exit_profit: float,
+        **kwargs,
+    ) -> float | None | tuple[float | None, str | None]:
         """
         Método opcional para ajustar la posición del trade.
-        La implementación por defecto no realiza ningún ajuste.
+        Permite modificar el stake (cantidad de inversión) del trade actual, ya sea aumentando o reduciendo la posición.
+        
+        :param trade: Objeto del trade en curso.
+        :param current_time: Datetime actual.
+        :param current_rate: Precio actual (igual que current_entry_profit).
+        :param current_profit: Ganancia actual (como ratio, igual que current_entry_profit).
+        :param min_stake: Stake mínimo permitido por el exchange.
+        :param max_stake: Stake máximo permitido.
+        :param current_entry_rate: Precio actual usando la estrategia de entrada.
+        :param current_exit_rate: Precio actual usando la estrategia de salida.
+        :param current_entry_profit: Ganancia actual calculada con la estrategia de entrada.
+        :param current_exit_profit: Ganancia actual calculada con la estrategia de salida.
+        :param **kwargs: Parámetros adicionales para compatibilidad futura.
+        
+        :return: Un float (positivo para aumentar el stake, negativo para disminuirlo),
+                None para no realizar acción o una tupla (float | None, str | None) donde el segundo elemento es
+                la razón del ajuste.
         """
         return None

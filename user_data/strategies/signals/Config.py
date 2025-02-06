@@ -37,7 +37,7 @@ class Config(Signal):
             'stoploss_on_exchange': False
         }
 
-        strat.stoploss = -0.05  # Stop-loss en -1%
+        strat.stoploss = -0.02  # Stop-loss en -2%
     
         # Trailing stoploss
         strat.trailing_stop = True  

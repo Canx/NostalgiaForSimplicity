@@ -403,20 +403,48 @@ class NostalgiaForSimplicity(IStrategy):
         return stoploss_value  # Devuelve el stop-loss más alto encontrado o None si no hay cambios
     
     
-    def adjust_trade_position(self, trade: Trade, current_time: datetime, current_rate: float, current_profit: float, **kwargs):
+    def adjust_trade_position(
+        self,
+        trade: Trade,
+        current_time: datetime,
+        current_rate: float,
+        current_profit: float,
+        min_stake: float | None,
+        max_stake: float,
+        current_entry_rate: float,
+        current_exit_rate: float,
+        current_entry_profit: float,
+        current_exit_profit: float,
+        **kwargs,
+    ) -> float | None | tuple[float | None, str | None]:
+        """
+        Permite ajustar la posición de un trade en curso.
+        Se invoca a las señales configuradas y, si alguna devuelve un valor, se utiliza ese valor para ajustar la posición.
+        """
+        # Empaquetar todos los parámetros en un diccionario
         params = {
             "trade": trade,
             "current_time": current_time,
             "current_rate": current_rate,
             "current_profit": current_profit,
+            "min_stake": min_stake,
+            "max_stake": max_stake,
+            "current_entry_rate": current_entry_rate,
+            "current_exit_rate": current_exit_rate,
+            "current_entry_profit": current_entry_profit,
+            "current_exit_profit": current_exit_profit,
             **kwargs,
         }
+
         adjusted_position = None
         for signal in self.signals:
             if signal.enabled:
+                # Llamamos al método adjust_trade_position de la señal pasándole todos los parámetros
                 result = signal.adjust_trade_position(**params)
                 if result is not None:
                     adjusted_position = result
                     self.log.info(f"Signal {signal.get_signal_tag()} ajustó la posición del trade a: {result}")
+                    # Si una señal ya ajustó la posición, salimos del bucle
                     break
         return adjusted_position
+

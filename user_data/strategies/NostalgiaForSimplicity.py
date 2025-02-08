@@ -1,4 +1,5 @@
 import psutil
+import time
 import os
 import gc
 import objgraph
@@ -224,11 +225,14 @@ class NostalgiaForSimplicity(IStrategy):
 
 
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:   
+        start_time = time.perf_counter()  # Capturamos el tiempo de inicio
         for indicator in self.indicators:
             if indicator.enabled:
                 self.log.debug(f"Populating indicators for {indicator.get_signal_tag()}.")
                 df = indicator.populate_indicators(df)  # Llamar al método de cada señal
         
+        elapsed_time = time.perf_counter() - start_time  # Calculamos el tiempo transcurrido
+        self.log.info(f"populate_indicators took {elapsed_time:.2f} seconds")
         return df
     
 

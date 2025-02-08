@@ -22,7 +22,7 @@ class Exit_ExpectedROI(Signal):
         trade_dur = int((current_time.timestamp() - trade.open_date_utc.timestamp()) // 60)
 
         # Stop-loss: salir rápido si la pérdida supera cierto umbral
-        stop_loss_threshold = -0.02  # -2% de pérdida
+        stop_loss_threshold = -0.01  # -1% de pérdida
 
         # Parámetros de reducción del ROI esperado
         decay_start_time = 60  # Comenzamos a reducir ROI después de 1 hora

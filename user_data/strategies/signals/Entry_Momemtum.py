@@ -3,7 +3,7 @@ from pandas import DataFrame
 import pandas as pd
 
 
-class Momemtum(Signal):
+class Entry_Momemtum(Signal):
     def __init__(self, priority: int = 110):
         super().__init__(priority, enabled=False)
     

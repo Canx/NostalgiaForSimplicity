@@ -3,7 +3,7 @@ from pandas import DataFrame
 import pandas as pd
 
 
-class ReverseMean(Signal):
+class Entry_ReverseMean(Signal):
     def __init__(self, priority: int = 100):
         super().__init__(priority, enabled=False)
     

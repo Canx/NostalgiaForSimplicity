@@ -2,18 +2,6 @@ from Signal import Signal
 from freqtrade.persistence import Trade
 from freqtrade.exchange import date_minus_candles
 from datetime import datetime
-
-
-# TODO: Generar vela actual para hacer cálculos
-# TODO: Comprobar si tenemos que vender, no solo comprar.
-class Adjust_BasicDCA(Signal):
-    def __init__(self, priority: int = 100):
-        super().__init__(priority, enabled=False)
-
-
-from datetime import datetime
-from freqtrade.persistence import Trade
-from Signal import Signal
 # Asegúrate de tener importada o definida la función date_minus_candles
 # from utils import date_minus_candles
 

@@ -19,6 +19,13 @@ class EMA(Signal):
         df["EMA_50"] = ta.ema(df["close"], length=50)
         df["EMA_200"] = ta.ema(df["close"], length=200)
 
+        df['delta_ema50'] = df['EMA_50'].diff()
+        df['delta_ema200'] = df['EMA_200'].diff()
+
+        # Señal cuando la EMA_50 está aumentando más que la EMA_200
+        df['ema_momemtum_signal'] = (df['delta_ema50'] > df['delta_ema200']).astype(int)
+
+
         # slope (1st derivative)
         df['EMA_5_slope'] = df['EMA_5'].diff()
         df['EMA_9_slope'] = df['EMA_9'].diff()

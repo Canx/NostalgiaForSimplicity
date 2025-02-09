@@ -4,7 +4,7 @@ import numpy as np
 
 class ProfitLoss(Signal):
     def __init__(self, priority: int = 1):
-        super().__init__(priority, enabled=True)
+        super().__init__(priority, enabled=False)
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:
         """

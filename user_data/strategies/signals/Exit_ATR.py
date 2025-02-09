@@ -1,4 +1,5 @@
 from Signal import Signal
+import pandas as pd
 
 class Exit_ATR(Signal):
     def __init__(self, priority: int = 100, atr_multiplier: float = 1.5, atr_sl_multiplier: float = 1.0):
@@ -17,8 +18,36 @@ class Exit_ATR(Signal):
             self.log.warning(f"[{pair}] Dataframe vacío o None al obtener datos analizados.")
             return None
 
-        # Utilizamos directamente la columna ATR_14
-        atr = dataframe["ATR_14"].iloc[-1]
+        # Intentar obtener ATR desde la columna "ATR_14" de la última vela válida.
+        try:
+            atr = None
+            # Recorrer el dataframe desde el final hacia el principio
+            for idx in range(len(dataframe) - 1, -1, -1):
+                atr_candidate = dataframe["ATR_14"].iloc[idx]
+                if pd.notnull(atr_candidate):
+                    atr = atr_candidate
+                    break
+            if atr is None:
+                self.log.error(f"[{pair}] No se encontró un valor ATR válido en el dataframe.")
+                # Fallback: usar ATR almacenado en el trade, si existe.
+                atr = trade.get_custom_data(key='fallback_atr', default=None)
+                if atr is None:
+                    self.log.error(f"[{pair}] No se encontró ATR fallback en los datos del trade.")
+                    return None
+                else:
+                    self.log.info(f"[{pair}] Se utiliza ATR fallback obtenido del trade: {atr:.4f}")
+            else:
+                # Guardar el ATR obtenido como fallback para usos futuros
+                trade.set_custom_data(key='fallback_atr', value=atr)
+        except Exception as e:
+            self.log.exception(f"[{pair}] Error al obtener ATR: {e}")
+            # Fallback en caso de excepción
+            atr = trade.get_custom_data(key='fallback_atr', default=None)
+            if atr is None:
+                self.log.error(f"[{pair}] No se encontró ATR fallback en los datos del trade tras excepción.")
+                return None
+            else:
+                self.log.info(f"[{pair}] Se utiliza ATR fallback obtenido del trade: {atr:.4f}")
 
         # Determinar la dirección del trade (por defecto "long")
         try:
@@ -26,6 +55,7 @@ class Exit_ATR(Signal):
         except AttributeError:
             direction = "long"
 
+        # Lógica de salida con ATR, incluyendo take profit y stop loss
         if direction == "long":
             target = trade.open_rate + atr * self.atr_multiplier
             stoploss = trade.open_rate - atr * self.atr_sl_multiplier
@@ -56,7 +86,6 @@ class Exit_ATR(Signal):
             elif current_rate >= stoploss:
                 return "exit_ATR_stop_loss"
 
-        # Si ninguna condición se cumple, logueamos el estado actual
-        self.log.info(f"[{pair}] No se alcanzó ni target ni stoploss. current_rate={current_rate:.4f}")
         return None
+
 

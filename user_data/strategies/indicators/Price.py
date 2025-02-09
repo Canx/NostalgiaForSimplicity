@@ -24,4 +24,13 @@ class Price(Signal):
         df['significant_drop'] = df['retorno_20'] < -umbral
         df['significant_high'] = df['retorno_20'] > umbral
 
+        # Calcular el cambio porcentual del cuerpo de la vela
+        candle_body_pct = (df["close"] - df["open"]) / df["open"]
+        
+        # Definir umbral para considerar la vela "excesivamente verde"
+        # Por ejemplo, un incremento superior al 0.5% se considera excesivo
+        threshold = 0.005  
+        excessively_green = (df["close"] > df["open"]) & (candle_body_pct > threshold)
+        df['not_too_green'] = ~excessively_green
+
         return df

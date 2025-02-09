@@ -11,6 +11,7 @@ class Trend(Signal):
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:
         # TODO: Remove segments where price dropped significantly
+        df['trend_filter'] = df["close"] > df["close"].rolling(window=50).mean()
         df['is_trend'] = (
             (df['low'] > df['EMA_55_1h'])           # Precio en 1h por encima de EMA_55_1h
             #(df['EMA_9_angle'] > 10) &             # Ángulo de EMA_9 en 5m mayor a 10 grados

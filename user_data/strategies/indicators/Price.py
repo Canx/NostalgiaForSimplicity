@@ -28,8 +28,8 @@ class Price(Signal):
         candle_body_pct = (df["close"] - df["open"]) / df["open"]
         
         # Definir umbral para considerar la vela "excesivamente verde"
-        # Por ejemplo, un incremento superior al 0.5% se considera excesivo
-        threshold = 0.005  
+        # Por ejemplo, un incremento superior al 2% se considera excesivo
+        threshold = 0.02  
         excessively_green = (df["close"] > df["open"]) & (candle_body_pct > threshold)
         df['not_too_green'] = ~excessively_green
 

@@ -11,10 +11,10 @@ class Entry_MACD(Signal):
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
         return (
-            (df["macd_buy"].rolling(window=5).sum() > 0)
-            & (df['volume_filter'])
+            (df["macd_buy"].rolling(window=20).sum() > 0)
+            & (df['volume'] > df['volume'].shift() * 3)
             & (df['trend_filter'])
-            #& (df['trend_filter'].shift(1) == False)
-            & (df["RSI_14"] < 70)
+            & (df["RSI_14"] < 60)
             & df['not_too_green']
+            & (df['close'] > df['open'])
         )

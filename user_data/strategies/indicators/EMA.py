@@ -14,6 +14,7 @@ class EMA(Signal):
         df["EMA_5"] = ta.ema(df["close"], length=5)
         df["EMA_9"] = ta.ema(df["close"], length=9)
         df["EMA_12"] = ta.ema(df["close"], length=12)
+        df["EMA_16"] = ta.ema(df["close"], length=16)
         df["EMA_20"] = ta.ema(df["close"], length=20)
         df["EMA_26"] = ta.ema(df["close"], length=26)
         df["EMA_50"] = ta.ema(df["close"], length=50)

@@ -37,13 +37,13 @@ class Config(Signal):
             'stoploss_on_exchange': False
         }
 
-        strat.stoploss = -0.02  # Stop-loss en -2%
+        strat.stoploss = -0.25  # Stop-loss en -25%
     
         # Trailing stoploss
-        strat.trailing_stop = True  
-        strat.trailing_stop_positive = 0.01  # Activa trailing stop al +1%
-        strat.trailing_stop_positive_offset = 0.015  # Se activa cuando el precio sube al 1.5%
-        strat.trailing_only_offset_is_reached = True  # Solo activa trailing si alcanza offset
+        strat.trailing_stop = False  
+        #strat.trailing_stop_positive = 0.01  # Activa trailing stop al +1%
+        #strat.trailing_stop_positive_offset = 0.015  # Se activa cuando el precio sube al 1.5%
+        #strat.trailing_only_offset_is_reached = True  # Solo activa trailing si alcanza offset
         strat.use_custom_stoploss = True
 
         # Adjust trade position

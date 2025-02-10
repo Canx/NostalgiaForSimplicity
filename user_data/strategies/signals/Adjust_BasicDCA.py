@@ -6,8 +6,9 @@ from datetime import datetime
 # from utils import date_minus_candles
 
 class Adjust_BasicDCA(Signal):
-    def __init__(self, strat, priority: int = 100):
-        super().__init__(strat, priority, enabled=False)
+    def init(self):
+        self.priority = 100
+        self.enabled = False
 
     def adjust_trade_position(
         self,

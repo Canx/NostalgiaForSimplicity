@@ -5,8 +5,9 @@ import pandas_ta as ta
 
 
 class SMA(Signal):
-    def __init__(self, strat, priority: int = 1):
-        super().__init__(strat, priority, enabled=True)
+    def init(self):
+        self.priority = 1
+        self.enabled = True
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:

@@ -6,10 +6,9 @@ import talib as ta
 # Exit borrowed from KamaFama_2
 class Exit_Stochastic(Signal):
 
-    
-
-    def __init__(self, strat, priority: int = 100):
-        super().__init__(strat, priority, enabled=False)
+    def init(self):
+        self.priority = 100
+        self.enabled = False
 
     def exit_signal(self, df: pd.DataFrame, metadata: dict) -> pd.Series:
         import talib as ta

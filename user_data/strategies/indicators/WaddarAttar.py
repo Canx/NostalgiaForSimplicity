@@ -5,8 +5,9 @@ import numpy as np
 
 
 class WaddarAttar(Signal):
-    def __init__(self, strat, priority: int = 10):
-        super().__init__(strat, priority, enabled=False)
+    def init(self):
+        self.priority = 10
+        self.enabled = False
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:

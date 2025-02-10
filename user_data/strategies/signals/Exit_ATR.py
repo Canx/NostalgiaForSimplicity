@@ -2,14 +2,12 @@ from Signal import Signal
 import pandas as pd
 
 class Exit_ATR(Signal):
-    def __init__(self, strat, priority: int = 100, atr_multiplier: float = 1.5, atr_sl_multiplier: float = 1.0):
-        """
-        atr_multiplier se establece en 1.5 por defecto para el target (take profit) en operaciones intradía o de pocas horas.
-        atr_sl_multiplier se establece en 1.0 por defecto para el stop loss basado en ATR.
-        """
-        super().__init__(strat, priority, enabled=True)
-        self.atr_multiplier = atr_multiplier
-        self.atr_sl_multiplier = atr_sl_multiplier
+    def init(self):
+        self.priority = 100
+        self.enabled = True
+        
+        self.atr_multiplier = 1.5
+        self.atr_sl_multiplier = 1.0
 
     def custom_exit(self, pair, trade, current_time, current_rate, current_profit, **kwargs):
         # Obtener el dataframe analizado

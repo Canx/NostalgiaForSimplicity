@@ -11,16 +11,34 @@ class Signal:
     Base class for all signals.
     """
 
-    def __init__(self, strategy: IStrategy, priority: int = 0, enabled: bool = True):
-        """
-        Initialize the signal with a priority value and enabled state.
-        :param priority: Lower values indicate higher priority. Default is 0.
-        :param enabled: Whether the plugin is enabled or not. Default is True.
-        """
-        self.priority = priority
-        self.enabled = enabled  # Estado de activación/desactivación del plugin
+    def __init__(self, strategy):
         self.strat = strategy
         self.log = logging.getLogger(__name__)
+        # Valores sentinela para detectar si no se han inicializado
+        self.priority = None
+        self.enabled = None
+        
+        # Llamada al método de inicialización de la subclase
+        self.init()
+        
+        # Comprobamos que se haya asignado un valor a 'priority'
+        if self.priority is None:
+            raise ValueError(
+                f"{self.__class__.__name__}.init() debe asignar un valor a 'priority'."
+            )
+        # Si lo deseas, también puedes comprobar 'enabled'
+        if self.enabled is None:
+            raise ValueError(
+                f"{self.__class__.__name__}.init() debe asignar un valor a 'enabled'."
+            )
+    
+
+    def init(self):
+        """
+        Método que deben implementar las subclases para inicializar
+        las variables 'priority' y 'enabled'.
+        """
+        pass
 
     
     def get_priority(self) -> int:

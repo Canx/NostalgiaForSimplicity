@@ -5,8 +5,9 @@ import pandas_ta as ta
 
 
 class BollingerBands(Signal):
-    def __init__(self, strat, priority: int = 2):
-        super().__init__(strat, priority, enabled=True)
+    def init(self):
+        self.priority = 2
+        self.enabled = True
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:

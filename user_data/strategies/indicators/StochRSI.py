@@ -5,8 +5,9 @@ import numpy as np
 
 
 class StochRSI(Signal):
-    def __init__(self, strat, priority: int = 1):
-        super().__init__(strat, priority, enabled=True)
+    def init(self):
+        self.priority = 1
+        self.enabled = True
     
     def _calculate_stochrsi(self, df: DataFrame) -> DataFrame:
 

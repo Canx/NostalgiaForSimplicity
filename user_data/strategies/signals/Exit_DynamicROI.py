@@ -1,8 +1,9 @@
 from Signal import Signal
 
 class Exit_DynamicROI(Signal):
-    def __init__(self, strat, priority: int = 100):
-        super().__init__(strat, priority, enabled=False)
+    def init(self):
+        self.priority = 100
+        self.enabled = False
 
     def custom_exit(self, pair, trade, current_time, current_rate, current_profit, **kwargs):
         """

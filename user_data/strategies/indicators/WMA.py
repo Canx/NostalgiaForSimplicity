@@ -5,8 +5,9 @@ import pandas_ta as ta
 
 
 class WMA(Signal):
-    def __init__(self, strat, priority: int = 1):
-        super().__init__(strat, priority, enabled=False)
+    def init(self):
+        self.priority = 1
+        self.enabled = False
     
     def tv_wma(df, length = 9) -> DataFrame:
         """

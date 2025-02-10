@@ -5,8 +5,9 @@ from datetime import datetime
 
 
 class Exit_DynamicTrailing(Signal):
-    def __init__(self, strat, priority: int = 100):
-        super().__init__(strat, priority, enabled=False)
+    def init(self):
+        self.priority = 100
+        self.enabled = False
 
     def custom_stoploss(self, pair: str, trade, current_time: datetime, current_rate: float, 
                           current_profit: float, **kwargs) -> float:

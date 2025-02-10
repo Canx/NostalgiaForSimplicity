@@ -5,8 +5,9 @@ import numpy as np
 
 
 class Downtrend(Signal):
-    def __init__(self, priority: int = 10):
-        super().__init__(priority, enabled=False)
+    def init(self):
+        self.priority = 10
+        self.enabled = False
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:

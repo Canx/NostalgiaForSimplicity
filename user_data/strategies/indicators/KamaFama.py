@@ -5,8 +5,9 @@ from technical import qtpylib
 
 
 class KamaFama(Signal):
-    def __init__(self, strat, priority: int = 5):
-        super().__init__(strat, priority, enabled=True)
+    def init(self):
+        self.priority = 5
+        self.enabled = True
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:

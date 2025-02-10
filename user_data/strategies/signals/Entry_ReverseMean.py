@@ -4,8 +4,9 @@ import pandas as pd
 
 
 class Entry_ReverseMean(Signal):
-    def __init__(self, strat, priority: int = 100):
-        super().__init__(strat, priority, enabled=False)
+    def init(self):
+        self.priority = 100
+        self.enabled = False
     
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

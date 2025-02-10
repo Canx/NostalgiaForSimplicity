@@ -5,8 +5,8 @@ import numpy as np
 
 
 class NFIX5RapidLong102(Signal):
-    def __init__(self, priority: int = 10):
-        super().__init__(priority, enabled=False)
+    def __init__(self, strat, priority: int = 10):
+        super().__init__(strat, priority, enabled=False)
     
 
     def populate_indicators(self, df: DataFrame) -> DataFrame:

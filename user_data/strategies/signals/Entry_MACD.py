@@ -5,8 +5,8 @@ import talib as ta
 
 
 class Entry_MACD(Signal):
-    def __init__(self, priority: int = 105):
-        super().__init__(priority, enabled=False)
+    def __init__(self, strat, priority: int = 105):
+        super().__init__(strat, priority, enabled=False)
     
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

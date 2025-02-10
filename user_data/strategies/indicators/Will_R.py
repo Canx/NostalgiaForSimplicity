@@ -4,8 +4,8 @@ import pandas_ta as pta
 
 
 class Will_R(Signal):
-    def __init__(self, priority: int = 1):
-        super().__init__(priority, enabled=True)
+    def __init__(self, strat, priority: int = 1):
+        super().__init__(strat, priority, enabled=True)
     
     def _calculate_willr(self, df: DataFrame, length: int) -> DataFrame:
 

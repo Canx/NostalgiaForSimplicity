@@ -8,11 +8,9 @@ class Config(Signal):
     Dynamic config
     """
 
-    def __init__(self, priority: int = 0):
-        super().__init__(priority, enabled=True)
+    def __init__(self, strat, priority: int = 0):
+        super().__init__(strat, priority, enabled=True)
 
-
-    def config_strategy(self, strat: IStrategy):
         strat.protections = [
         {
             "method": "LowProfitPairs",
@@ -53,6 +51,3 @@ class Config(Signal):
         strat.startup_candle_count = 300
 
         strat.process_only_new_candles = True
-
-        # call parent Signal
-        super().config_strategy(strat)

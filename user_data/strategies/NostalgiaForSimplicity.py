@@ -29,7 +29,6 @@ class NostalgiaForSimplicity(IStrategy):
         self.indicators = self.load("indicators", Signal)
         self.log.info(f"Indicadores cargados: {[type(ind).__name__ for ind in self.indicators]}")
         self.signals = self.load("signals", Signal)
-        self.config_strategy()
         super().__init__(config)
         
 
@@ -59,14 +58,12 @@ class NostalgiaForSimplicity(IStrategy):
         if files_modified.get("signals"):
             self.log.info("Cambios detectados en 'signals'. Recargando...")
             self._reload_component("signals", Signal)
-            self.config_strategy()
             self._refresh_signals()
 
         if files_modified.get("indicators"):
             self.log.info("Cambios detectados en 'indicators'. Recargando...")
             self._reload_component("indicators", Signal)
             self._reload_component("signals", Signal)
-            self.config_strategy()
             self._refresh_signals()
 
         self.log_memory_usage() 
@@ -184,7 +181,7 @@ class NostalgiaForSimplicity(IStrategy):
                 for attr_name in dir(module):
                     attr = getattr(module, attr_name)
                     if isinstance(attr, type) and issubclass(attr, base_class) and attr is not base_class:
-                        components.append(attr())
+                        components.append(attr(self))
                         self.log.debug(f"Clase cargada: {attr.__name__} desde {file_path}")
 
         # Ordenar las clases por prioridad si aplicable
@@ -215,13 +212,6 @@ class NostalgiaForSimplicity(IStrategy):
         }
 
         return plot_config
-
-    def config_strategy(self):
-        
-        for signal in self.signals:
-            if signal.enabled:
-                self.log.info(f"Configuring strategy... {signal.get_signal_tag()}.")
-                signal.config_strategy(self)  # Llamar al método de cada señal
 
 
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:   

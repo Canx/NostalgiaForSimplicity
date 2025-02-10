@@ -3,12 +3,12 @@ from pandas import DataFrame
 import numpy as np
 
 class TrendSlope(Signal):
-    def __init__(self, priority: int = 10, window: int = 10):
+    def __init__(self, strat, priority: int = 10, window: int = 10):
         """
         :param priority: Prioridad del indicador.
         :param window: Número de velas a considerar para el cálculo (N).
         """
-        super().__init__(priority, enabled=False)
+        super().__init__(strat, priority, enabled=False)
         self.N = window
         self.min_distance = window / 2  # Distancia mínima en número de velas dentro de la ventana
 

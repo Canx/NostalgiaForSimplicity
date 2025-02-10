@@ -1,8 +1,8 @@
 from Signal import Signal
 
 class Exit_ExpectedROI(Signal):
-    def __init__(self, priority: int = 100):
-        super().__init__(priority, enabled=False)
+    def __init__(self, strat, priority: int = 100):
+        super().__init__(strat, priority, enabled=False)
 
     def custom_exit(self, pair, trade, current_time, current_rate, current_profit, **kwargs):
         """

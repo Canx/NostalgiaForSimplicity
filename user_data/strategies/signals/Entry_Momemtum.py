@@ -4,8 +4,8 @@ import pandas as pd
 
 
 class Entry_Momemtum(Signal):
-    def __init__(self, priority: int = 110):
-        super().__init__(priority, enabled=False)
+    def __init__(self, strat, priority: int = 110):
+        super().__init__(strat, priority, enabled=False)
     
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

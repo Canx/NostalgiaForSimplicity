@@ -5,8 +5,8 @@ import pandas_ta as ta
 
 
 class RSI(Signal):
-    def __init__(self, priority: int = 1):
-        super().__init__(priority, enabled=True)
+    def __init__(self, strat, priority: int = 1):
+        super().__init__(strat, priority, enabled=True)
     
     def _calculate_rsi(self, df: DataFrame, length: int) -> DataFrame:
 

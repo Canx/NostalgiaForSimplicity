@@ -8,8 +8,8 @@ class Exit_Stochastic(Signal):
 
     
 
-    def __init__(self, priority: int = 100):
-        super().__init__(priority, enabled=False)
+    def __init__(self, strat, priority: int = 100):
+        super().__init__(strat, priority, enabled=False)
 
     def exit_signal(self, df: pd.DataFrame, metadata: dict) -> pd.Series:
         import talib as ta

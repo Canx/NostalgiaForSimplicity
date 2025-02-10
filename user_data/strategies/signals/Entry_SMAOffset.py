@@ -7,12 +7,10 @@ from freqtrade.strategy import IStrategy
 
 class Entry_SMAOffset(Signal):
 
-    def __init__(self, priority: int = 105):
-        super().__init__(priority, enabled=True)
+    def __init__(self, strat: IStrategy, priority: int = 105):
+        super().__init__(strat, priority, enabled=True)
 
-    def config_strategy(self, strat: IStrategy):
         strat.buy_rsi = IntParameter(50, 70, default=59, space="buy")
-        super().config_strategy(strat)
   
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:

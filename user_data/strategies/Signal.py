@@ -11,7 +11,7 @@ class Signal:
     Base class for all signals.
     """
 
-    def __init__(self, priority: int = 0, enabled: bool = True):
+    def __init__(self, strategy: IStrategy, priority: int = 0, enabled: bool = True):
         """
         Initialize the signal with a priority value and enabled state.
         :param priority: Lower values indicate higher priority. Default is 0.
@@ -19,10 +19,9 @@ class Signal:
         """
         self.priority = priority
         self.enabled = enabled  # Estado de activación/desactivación del plugin
+        self.strat = strategy
         self.log = logging.getLogger(__name__)
 
-    def config_strategy(self, strat: IStrategy):
-        self.strat = strat
     
     def get_priority(self) -> int:
         """

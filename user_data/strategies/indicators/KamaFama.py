@@ -18,7 +18,8 @@ class KamaFama(Signal):
         df["kama_slope"] = df["kama"].diff()
         df['mama_over_fama'] = df['mama'] > df['fama']
         df['kama_over_fama'] = df['kama'] > df['fama']
-        df['fama_over_mama'] = (df['fama'] > df['mama'] * 0.981)
+        df['mama_offset_0981'] = (df['mama'] * 0.981)
+        df['fama_over_mama'] = (df['fama'] > df['mama_offset_0981'])
         df['WILLR_KF'] = (df['WILLR_14'] < -61.3)
         df['mamadiff_KF'] = (df['mama_diff'] < -0.025)
         df['cti_KF'] = (df['cti'] < -0.715)

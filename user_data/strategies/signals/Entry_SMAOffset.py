@@ -8,7 +8,7 @@ class Entry_SMAOffset(Signal):
 
     def init(self):
         self.priority = 105
-        self.enabled = True
+        self.enabled = False
         self.strat.buy_rsi = IntParameter(50, 70, default=59, space="buy")
   
 

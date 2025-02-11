@@ -5,7 +5,7 @@ class Exit_ATR(Signal):
     def init(self):
         self.priority = 100
         self.enabled = True
-        
+
         self.atr_multiplier = 1.5
         self.atr_sl_multiplier = 1.0
 

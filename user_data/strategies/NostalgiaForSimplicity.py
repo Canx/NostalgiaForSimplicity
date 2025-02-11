@@ -188,30 +188,37 @@ class NostalgiaForSimplicity(IStrategy):
         return sorted(components, key=lambda component: component.get_priority())
 
 
-
     @property
     def plot_config(self):
-        plot_config = {}
-        plot_config['main_plot'] = {
-            'EMA_12': {'color': 'red'},
-            'EMA_26': {'color': 'blue'},
-            'EMA_50': {'color': 'green'},
-            'EMA_200': {'color': 'yellow'},
-        }
-        plot_config['subplots'] = {
-            # Create subplot MACD
-            "downtrend": {
-                'is_downtrend': {'color': 'red'},
-            },
-            "downtrend_signals": {
-                'downtrend_signals': { 'color': 'blue'},
-            },
-            "ADX": {
-                'ADX': { 'color': 'green'},
-            }
+        # Inicializamos un diccionario base con las claves 'main_plot' y 'subplots'
+        global_plot_config = {
+            'main_plot': {},
+            'subplots': {}
         }
 
-        return plot_config
+        # Iteramos sobre todas las señales cargadas
+        for signal in self.signals:
+            # Verificamos que la señal tenga definida su configuración de plot.
+            # Se asume que cada señal tiene un método o propiedad 'plot_config'
+            if hasattr(signal, 'plot_config'):
+                # Si 'plot_config' es callable, la llamamos para obtener el diccionario
+                signal_config = signal.plot_config() if callable(signal.plot_config) else signal.plot_config
+
+                # Si la señal define configuración para el gráfico principal ('main_plot'), la combinamos
+                if 'main_plot' in signal_config:
+                    global_plot_config['main_plot'].update(signal_config['main_plot'])
+
+                # Hacemos lo mismo para cada subplot definido
+                if 'subplots' in signal_config:
+                    for subplot_name, subplot_config in signal_config['subplots'].items():
+                        if subplot_name in global_plot_config['subplots']:
+                            # Si ya existe ese subplot, actualizamos su configuración
+                            global_plot_config['subplots'][subplot_name].update(subplot_config)
+                        else:
+                            global_plot_config['subplots'][subplot_name] = subplot_config
+
+        return global_plot_config
+
 
 
     def populate_indicators(self, df: DataFrame, metadata: dict) -> DataFrame:   

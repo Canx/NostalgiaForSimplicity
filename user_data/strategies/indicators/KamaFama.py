@@ -28,35 +28,4 @@ class KamaFama(Signal):
         df['RSI84_KF'] = (df['RSI_84'] < 60)
         df['RSI112_KF'] = (df['RSI_112'] < 60)
 
-        df['entry_KF'] = (
-            (df['kama_over_fama'])
-            & (df['fama_over_mama'])
-            & (df['WILLR_KF'])
-            & (df['mamadiff_KF'])
-            & (df['cti_KF'])
-            & (df['close48_KF'])
-            & (df['close288_KF'])
-            & (df['RSI84_KF'])
-            & (df['RSI112_KF'])
-        )
-
-        #df["mama_crossup_fama"] = (df["mama"].shift(1) < df["fama"].shift(1)) & (df["mama"] >= df["fama"])
-        #df["kama_slope3_pct"] = (df["kama"] / df["kama"].shift(3) - 1) * 100
-        #df["kama_accel_pct"] = (df["kama_slope3_pct"] / df["kama_slope3_pct"].shift(4) - 1) * 100
-        #df["kama_min_prev_accel"] = df["kama_accel_pct"].shift(1).rolling(window=5, min_periods=1).min()
-
-        # #df["kama_buy"] = (df["kama_min_prev_accel"] < -0.015) & (df["kama_accel_pct"] > 0)
-        # df["mama_crossup_fama"] = qtpylib.crossed_above(df['mama'], df['fama'])
-        # #df['mama_diff'] = 100 / df['mama'].shift(1) * df['mama'] - 100
-        # df['kama_increase'] = df['kama'] > df['kama'].shift(1)
-        # #df['mama_diff_over'] = df['mama_diff'] > 0.1
-        # df["kama_buy"] = (
-        #         (df["mama_crossup_fama"]) &
-        #         (df['mama_diff_over']) &
-        #         (df['kama_increase']) &
-        #         (df['volume'] > 0)
-        # )
-
-
-
         return df

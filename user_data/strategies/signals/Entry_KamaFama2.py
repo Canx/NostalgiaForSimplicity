@@ -54,4 +54,14 @@ class Entry_KamaFama2(Signal):
 
 
     def entry_signal(self, df: DataFrame, metadata: dict) -> pd.Series:
-        return (df['entry_KF'])
+        return (
+            (df['kama_over_fama'])
+            & (df['fama_over_mama'])
+            & (df['WILLR_KF'])
+            & (df['mamadiff_KF'])
+            & (df['cti_KF'])
+            & (df['close48_KF'])
+            & (df['close288_KF'])
+            & (df['RSI84_KF'])
+            & (df['RSI112_KF'])
+        )
